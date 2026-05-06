@@ -93,10 +93,6 @@ class AuthController extends Controller
         $usuario = Usuario::getById($user_id);
 
         if ($usuario) {
-            dd(
-                $usuario->getNombre(),
-                $usuario->getEmail()
-            );
             return response()->json([
                 'success' => true,
                 'usuario' => [
