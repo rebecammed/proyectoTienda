@@ -120,7 +120,9 @@ export default function Perfil() {
       },
     );
     const data = await res.json();
+    console.log(data);
     if (data.success) setUsuario(data.usuario);
+    console.log(data.usuario);
     else setMensaje(data.mensaje);
   };
 
