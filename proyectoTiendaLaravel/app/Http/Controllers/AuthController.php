@@ -100,7 +100,6 @@ class AuthController extends Controller
                     'nombre' => $usuario->getNombre(),
                     'email' => $usuario->getEmail(),
                     'activo' => $usuario->isActivo(),
-                    'twofa' => $usuario->twofaActivo()
                 ]
             ]);
         }
