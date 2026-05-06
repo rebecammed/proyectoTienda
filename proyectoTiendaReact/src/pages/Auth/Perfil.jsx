@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import logoEmpresa from "../assets/Tienda_logo.png";
+import logoEmpresa from "/Tienda_logo.png";
 
 export default function Perfil() {
   const [usuario, setUsuario] = useState({
