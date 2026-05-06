@@ -99,7 +99,12 @@ class Usuario extends Model
     public static function getById($id)
     {
         $result = DB::table('usuarios')
-            ->select('ID_usuario', 'Email', 'Nombre_completo', 'Activo', 'Twofa_activo')
+            ->select(
+                'ID_usuario as id',
+                'Email as email',
+                'Nombre_completo as nombre',
+                'Activo as activo',
+            )
             ->where('ID_usuario', $id)
             ->first();
 
