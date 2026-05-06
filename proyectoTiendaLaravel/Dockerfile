@@ -1,28 +1,39 @@
 FROM php:8.2-apache
 
-# Instalar extensiones necesarias para Laravel
-RUN docker-php-ext-install pdo pdo_mysql
+# Instalar dependencias necesarias
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    libzip-dev
 
-# Habilitar mod_rewrite para Apache
+# Extensiones PHP necesarias
+RUN docker-php-ext-install pdo pdo_mysql zip
+
+# Habilitar mod_rewrite
 RUN a2enmod rewrite
-
-# Copiar el código de la aplicación
-COPY . /var/www/html/
-
-# Configurar permisos para almacenamiento y caché
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Instalar dependencias de Laravel
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# Directorio de trabajo
+WORKDIR /var/www/html
 
-# Configurar virtual host para permitir .htaccess
-RUN echo '<Directory /var/www/html/public>' >> /etc/apache2/apache2.conf
-RUN echo '    AllowOverride All' >> /etc/apache2/apache2.conf
-RUN echo '</Directory>' >> /etc/apache2/apache2.conf
+# Copiar proyecto
+COPY . .
+
+# Instalar dependencias Laravel
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Configurar Apache para Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Permisos
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
 
 # Exponer puerto
 EXPOSE 80
