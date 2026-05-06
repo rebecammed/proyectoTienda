@@ -66,13 +66,16 @@ const AdminPanel = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/admin/stats", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/admin/stats",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
         },
-        credentials: "include",
-      });
+      );
 
       const data = await response.json();
 
@@ -90,7 +93,7 @@ const AdminPanel = () => {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
       method: "POST",
       credentials: "include",
     });

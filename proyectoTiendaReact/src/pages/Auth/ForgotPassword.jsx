@@ -41,7 +41,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/forgot-password",
+        "https://proyectotienda-m8um.onrender.com/api/forgot-password",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

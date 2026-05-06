@@ -63,11 +63,14 @@ const UserList = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/admin/usuarios", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/admin/usuarios",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        },
+      );
 
       const data = await response.json();
 
@@ -96,7 +99,7 @@ const UserList = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/admin/usuarios/${id}/estado`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}/estado`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -136,7 +139,7 @@ const UserList = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/admin/usuarios/${id}/eliminar`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}/eliminar`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -162,7 +165,7 @@ const UserList = () => {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
       method: "POST",
       credentials: "include",
     });

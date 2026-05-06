@@ -49,11 +49,14 @@ const ResetPassword = () => {
     setCargando(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, email, password }),
-      });
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/reset-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, email, password }),
+        },
+      );
 
       const data = await response.json();
 

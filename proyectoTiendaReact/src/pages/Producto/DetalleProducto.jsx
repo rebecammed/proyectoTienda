@@ -87,10 +87,13 @@ function DetalleProducto() {
     setError("");
 
     try {
-      const res = await fetch(`http://localhost:8000/api/productos/${id}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `https://proyectotienda-m8um.onrender.com/api/productos/${id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
       const data = await res.json();
 
@@ -120,12 +123,15 @@ function DetalleProducto() {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/carrito/add", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: producto.id, cantidad: cantidad }),
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/carrito/add",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: producto.id, cantidad: cantidad }),
+        },
+      );
 
       const data = await res.json();
 
@@ -142,7 +148,7 @@ function DetalleProducto() {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
       method: "POST",
       credentials: "include",
     });

@@ -73,11 +73,14 @@ const ProductList = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/productos", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/productos",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        },
+      );
 
       const data = await response.json();
 
@@ -104,7 +107,7 @@ const ProductList = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/admin/productos/${id}`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/productos/${id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -130,7 +133,7 @@ const ProductList = () => {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
       method: "POST",
       credentials: "include",
     });

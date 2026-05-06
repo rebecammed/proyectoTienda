@@ -153,15 +153,18 @@ function Registro() {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuario,
-          contrasena,
-          nombre_completo,
-        }),
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/registro",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usuario,
+            contrasena,
+            nombre_completo,
+          }),
+        },
+      );
 
       const data = await res.json();
       if (!res.ok) {

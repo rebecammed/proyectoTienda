@@ -23,9 +23,12 @@ function MisPedidos() {
 
   const fetchPedidos = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/pedidos", {
-        credentials: "include",
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/pedidos",
+        {
+          credentials: "include",
+        },
+      );
       const data = await res.json();
       if (data.success) {
         setPedidos(data.pedidos);

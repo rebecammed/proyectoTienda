@@ -39,7 +39,7 @@ function AdminPedidosUsuario() {
 
     try {
       const resUsuario = await fetch(
-        `http://localhost:8000/api/admin/usuarios/${id}`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}`,
         {
           method: "GET",
           credentials: "include",
@@ -53,7 +53,7 @@ function AdminPedidosUsuario() {
       }
 
       const resPedidos = await fetch(
-        `http://localhost:8000/api/admin/pedidos/usuario/${id}`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/usuario/${id}`,
         {
           method: "GET",
           credentials: "include",

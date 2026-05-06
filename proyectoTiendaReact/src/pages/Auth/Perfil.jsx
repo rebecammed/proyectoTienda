@@ -99,22 +99,28 @@ export default function Perfil() {
   }, []);
 
   const fetchUsuario = async () => {
-    const res = await fetch("http://localhost:8000/api/perfil", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const res = await fetch(
+      "https://proyectotienda-m8um.onrender.com/api/perfil",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      },
+    );
     const data = await res.json();
     if (data.success) setUsuario(data.usuario);
     else setMensaje(data.mensaje);
   };
 
   const fetchDirecciones = async () => {
-    const res = await fetch("http://localhost:8000/api/direcciones", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const res = await fetch(
+      "https://proyectotienda-m8um.onrender.com/api/direcciones",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      },
+    );
     const data = await res.json();
     if (data.success) {
       setDirecciones(data.direcciones);
@@ -135,15 +141,18 @@ export default function Perfil() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:8000/api/perfil", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: usuario.nombre,
-        email: usuario.email,
-      }),
-      credentials: "include",
-    });
+    const res = await fetch(
+      "https://proyectotienda-m8um.onrender.com/api/perfil",
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: usuario.nombre,
+          email: usuario.email,
+        }),
+        credentials: "include",
+      },
+    );
     const data = await res.json();
     if (data.success) {
       setMensaje(data.mensaje);
@@ -170,15 +179,18 @@ export default function Perfil() {
       return;
     }
 
-    const res = await fetch("http://localhost:8000/api/cambiar-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        password_actual: passwordData.password_actual,
-        password_nueva: passwordData.password_nueva,
-      }),
-    });
+    const res = await fetch(
+      "https://proyectotienda-m8um.onrender.com/api/cambiar-password",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          password_actual: passwordData.password_actual,
+          password_nueva: passwordData.password_nueva,
+        }),
+      },
+    );
 
     const data = await res.json();
     if (data.success) {
@@ -222,7 +234,7 @@ export default function Perfil() {
     e.preventDefault();
     setError("");
 
-    const url = "http://localhost:8000/api/direcciones";
+    const url = "https://proyectotienda-m8um.onrender.com/api/direcciones";
     const method = direccionEditando ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -254,10 +266,13 @@ export default function Perfil() {
   const eliminarDireccion = async (id) => {
     if (!confirm("¿Estás seguro de eliminar esta dirección?")) return;
 
-    const res = await fetch(`http://localhost:8000/api/direcciones/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    const res = await fetch(
+      `https://proyectotienda-m8um.onrender.com/api/direcciones/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
 
     const data = await res.json();
     if (data.success) {
@@ -287,10 +302,13 @@ export default function Perfil() {
     if (!confirmar) return;
 
     try {
-      const res = await fetch("http://localhost:8000/api/perfil", {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/perfil",
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
       const data = await res.json();
 

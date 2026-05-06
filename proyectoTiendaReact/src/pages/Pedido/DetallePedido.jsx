@@ -32,13 +32,16 @@ function DetallePedido() {
     try {
       setLoading(true);
 
-      const res = await fetch(`http://localhost:8000/api/pedidos/${id}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `https://proyectotienda-m8um.onrender.com/api/pedidos/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (res.status === 401) {
         navigate("/login");

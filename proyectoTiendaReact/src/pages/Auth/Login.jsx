@@ -42,17 +42,20 @@ const Login = () => {
     localStorage.removeItem("rol");
 
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            usuario: usuario,
+            contrasena: contrasena,
+          }),
+          credentials: "include",
         },
-        body: JSON.stringify({
-          usuario: usuario,
-          contrasena: contrasena,
-        }),
-        credentials: "include",
-      });
+      );
 
       const data = await response.json();
 

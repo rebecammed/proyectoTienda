@@ -63,7 +63,7 @@ const ProductForm = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/productos/${id}`,
+        `https://proyectotienda-m8um.onrender.com/api/productos/${id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -137,8 +137,8 @@ const ProductForm = () => {
 
     try {
       const url = esEdicion
-        ? `http://localhost:8000/api/admin/productos/${id}`
-        : "http://localhost:8000/api/admin/productos";
+        ? `https://proyectotienda-m8um.onrender.com/api/admin/productos/${id}`
+        : "https://proyectotienda-m8um.onrender.com/api/admin/productos";
 
       const method = esEdicion ? "PUT" : "POST";
 

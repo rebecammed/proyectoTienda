@@ -75,11 +75,14 @@ function Carrito() {
 
   const cargarCarrito = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/carrito", {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/carrito",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
       const data = await res.json();
       if (data.success !== false) {
         setCarrito(data.carrito || []);
@@ -96,11 +99,14 @@ function Carrito() {
   const cargarDirecciones = async () => {
     setCargandoDirecciones(true);
     try {
-      const res = await fetch("http://localhost:8000/api/direcciones", {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/direcciones",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
       const data = await res.json();
       if (data.success && data.direcciones) {
         setDirecciones(data.direcciones);
@@ -123,7 +129,7 @@ function Carrito() {
     }
     setActualizando(true);
     try {
-      await fetch("http://localhost:8000/api/carrito/add", {
+      await fetch("https://proyectotienda-m8um.onrender.com/api/carrito/add", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -145,12 +151,15 @@ function Carrito() {
     }
     setActualizando(true);
     try {
-      await fetch("http://localhost:8000/api/carrito/remove", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: id }),
-      });
+      await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/carrito/remove",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: id }),
+        },
+      );
       await cargarCarrito();
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -168,7 +177,7 @@ function Carrito() {
     if (!window.confirm("¿Estás seguro de que quieres vaciar el carrito?")) {
       return;
     }
-    await fetch("http://localhost:8000/api/carrito/clear", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/carrito/clear", {
       method: "POST",
       credentials: "include",
     });
@@ -190,14 +199,17 @@ function Carrito() {
 
     setActualizando(true);
     try {
-      const res = await fetch("http://localhost:8000/api/pedido/confirmar", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          direccion_id: direccionSeleccionada,
-        }),
-      });
+      const res = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/pedido/confirmar",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            direccion_id: direccionSeleccionada,
+          }),
+        },
+      );
       const data = await res.json();
       if (data.success) {
         alert("¡Pedido confirmado con éxito!");
@@ -215,7 +227,7 @@ function Carrito() {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
       method: "POST",
       credentials: "include",
     });

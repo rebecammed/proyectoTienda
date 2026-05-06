@@ -50,11 +50,14 @@ function AdminDetallePedido() {
     setError("");
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/pedidos/${id}`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
       const data = await res.json();
 
@@ -82,7 +85,7 @@ function AdminDetallePedido() {
     setActualizando(true);
     try {
       const res = await fetch(
-        `http://localhost:8000/api/admin/pedidos/${id}/estado`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${id}/estado`,
         {
           method: "PUT",
           credentials: "include",

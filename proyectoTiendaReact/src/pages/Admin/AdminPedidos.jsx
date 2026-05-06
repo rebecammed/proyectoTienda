@@ -70,11 +70,14 @@ const AdminPedidos = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/admin/pedidos", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/admin/pedidos",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        },
+      );
 
       const data = await response.json();
 
@@ -93,11 +96,14 @@ const AdminPedidos = () => {
 
   const cargarUsuarios = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/admin/usuarios", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://proyectotienda-m8um.onrender.com/api/admin/usuarios",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        },
+      );
 
       const data = await response.json();
 
@@ -118,7 +124,7 @@ const AdminPedidos = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/admin/pedidos/${pedidoId}/estado`,
+        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${pedidoId}/estado`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -162,7 +168,7 @@ const AdminPedidos = () => {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
       method: "POST",
       credentials: "include",
     });
