@@ -90,7 +90,7 @@ function ProductCard({ producto, addProd, isLoggedIn }) {
       >
         {producto.url_imagenes ? (
           <img
-            src={producto.url_imagenes}
+            src={`/${producto.url_imagenes}`}
             alt={producto.nombre}
             style={{
               width: "100%",
