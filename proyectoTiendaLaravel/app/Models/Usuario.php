@@ -18,8 +18,6 @@ class Usuario extends Model
         'Nombre_completo',
         'Rol',
         'Activo',
-        'Twofa_activo',
-        'Twofa_secreto',
         'Fecha_creacion',
         'Fecha_baja',
         'Reset_token',
@@ -28,7 +26,6 @@ class Usuario extends Model
 
     protected $hidden = [
         'Password_hash',
-        'Twofa_secreto',
         'Reset_token'
     ];
 
@@ -36,7 +33,6 @@ class Usuario extends Model
     public $email;
     public $nombre;
     public $activo;
-    public $twofa;
 
     public function __construct(array $attributes = [])
     {
@@ -47,7 +43,6 @@ class Usuario extends Model
             $this->email = $attributes['Email'] ?? null;
             $this->nombre = $attributes['Nombre_completo'] ?? null;
             $this->activo = $attributes['Activo'] ?? null;
-            $this->twofa = $attributes['Twofa_activo'] ?? null;
         }
     }
 
@@ -71,10 +66,6 @@ class Usuario extends Model
         return $this->activo;
     }
 
-    public function twofaActivo()
-    {
-        return $this->twofa;
-    }
 
     public function setEmail($email)
     {
@@ -91,10 +82,7 @@ class Usuario extends Model
         $this->activo = false;
     }
 
-    public function activarTwofa()
-    {
-        $this->twofa = true;
-    }
+
 
     public static function getById($id)
     {
@@ -117,8 +105,7 @@ class Usuario extends Model
             ->update([
                 'Email' => $usuario->getEmail(),
                 'Nombre_completo' => $usuario->getNombre(),
-                'Activo' => $usuario->isActivo(),
-                'Twofa_activo' => $usuario->twofaActivo()
+                'Activo' => $usuario->isActivo()
             ]);
     }
 
@@ -168,8 +155,6 @@ class Usuario extends Model
                 'Activo' => 0,
                 'Reset_token' => null,
                 'Reset_expira' => null,
-                'Twofa_secreto' => null,
-                'Twofa_activo' => 0
             ]);
 
         // Anonimizar direcciones asociadas
