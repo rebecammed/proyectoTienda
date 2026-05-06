@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import logoEmpresa from "../assets/Tienda_logo.png";
 
 export default function Perfil() {
   const [usuario, setUsuario] = useState({
@@ -28,8 +30,9 @@ export default function Perfil() {
     facturacion: false,
   });
   const navigate = useNavigate();
+  const { isLoggedIn, esAdmin, logout } = useAuth();
 
-  // Estilos unificados (mismos que en componentes anteriores)
+  // Estilos unificados
   const buttonStyles = {
     primary: {
       backgroundColor: "#DFD777",
@@ -97,6 +100,15 @@ export default function Perfil() {
     fetchUsuario();
     fetchDirecciones();
   }, []);
+
+  const handleLogout = async () => {
+    await fetch("https://proyectotienda-m8um.onrender.com/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    logout();
+    navigate("/login");
+  };
 
   const fetchUsuario = async () => {
     const res = await fetch(
@@ -332,249 +344,137 @@ export default function Perfil() {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#E5DDE2",
-        minHeight: "100vh",
-        padding: "40px 20px",
-      }}
-    >
-      <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+    <div style={{ backgroundColor: "#E5DDE2", minHeight: "100vh" }}>
+      {/* HEADER con logo y navegación */}
+      <div
+        style={{
+          backgroundColor: "white",
+          padding: "15px 30px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          borderBottom: `2px solid #DFD777`,
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+        }}
+      >
         <div
           style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "30px",
-            paddingBottom: "15px",
-            borderBottom: `3px solid #DFD777`,
+            flexWrap: "wrap",
+            gap: "15px",
           }}
         >
-          <h1 style={{ color: "#3D0026" }}>Mi Perfil</h1>
-          <button
-            onClick={irMisPedidos}
+          {/* Logo y nombre */}
+          <Link
+            to="/"
             style={{
-              ...buttonStyles.info,
-              padding: "10px 20px",
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              fontSize: "14px",
+              textDecoration: "none",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#6B5505")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#7C6406")
-            }
           >
-            Mis pedidos
-          </button>
-        </div>
+            <img
+              src={logoEmpresa}
+              alt="Logo Tienda"
+              style={{ height: "45px", width: "auto", marginRight: "12px" }}
+            />
+            <span
+              style={{ fontWeight: "bold", fontSize: "20px", color: "#3D0026" }}
+            >
+              Accesorios hechos a mano
+            </span>
+          </Link>
 
-        {/* Mensajes */}
-        {mensaje && (
-          <div
-            style={{
-              backgroundColor: "#DFD777",
-              color: "#3D0026",
-              padding: "12px 20px",
-              borderRadius: "10px",
-              marginBottom: "20px",
-              borderLeft: `4px solid #3D0026`,
-              fontWeight: "500",
-            }}
-          >
-            ¡Éxito! {mensaje}
-          </div>
-        )}
-        {error && (
-          <div
-            style={{
-              backgroundColor: "#9C7C77",
-              color: "white",
-              padding: "12px 20px",
-              borderRadius: "10px",
-              marginBottom: "20px",
-              borderLeft: `4px solid #3D0026`,
-            }}
-          >
-            Error: {error}
-          </div>
-        )}
-
-        {/* Datos personales */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "15px",
-            padding: "25px",
-            marginBottom: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              margin: "0 0 20px 0",
-              paddingBottom: "10px",
-              borderBottom: `2px solid #E5DDE2`,
-              color: "#3D0026",
-            }}
-          >
-            Datos personales
-          </h3>
-
-          {!modoEdicion ? (
-            <div>
-              <p style={{ margin: "10px 0", color: "#3D0026" }}>
-                <strong>Nombre:</strong> {usuario.nombre}
-              </p>
-              <p style={{ margin: "10px 0", color: "#3D0026" }}>
-                <strong>Email:</strong> {usuario.email}
-              </p>
-              <button
-                onClick={() => setModoEdicion(true)}
+          {/* Botones de navegación */}
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <Link
+              to="/productos"
+              style={{
+                ...buttonStyles.accent,
+                padding: "8px 20px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              Productos
+            </Link>
+            <Link
+              to="/carrito"
+              style={{
+                ...buttonStyles.accent,
+                padding: "8px 20px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              Carrito
+            </Link>
+            {esAdmin && (
+              <Link
+                to="/admin"
                 style={{
-                  ...buttonStyles.warning,
+                  ...buttonStyles.secondary,
                   padding: "8px 20px",
-                  marginTop: "10px",
+                  textDecoration: "none",
+                  fontSize: "14px",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#C9BE5E")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#DFD777")
-                }
               >
-                Editar perfil
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Nombre Completo:
-                </label>
-                <input
-                  type="text"
-                  name="nombre"
-                  value={usuario.nombre}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Email:
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={usuario.email}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  type="submit"
-                  style={{ ...buttonStyles.primary, padding: "10px 20px" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#C9BE5E")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#DFD777")
-                  }
-                >
-                  Guardar Cambios
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModoEdicion(false)}
-                  style={{ ...buttonStyles.danger, padding: "10px 20px" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#8B6B66")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9C7C77")
-                  }
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          )}
+                Panel Admin
+              </Link>
+            )}
+            <Link
+              to="/perfil"
+              style={{
+                ...buttonStyles.primary,
+                padding: "8px 20px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              Mi Perfil
+            </Link>
+            <button
+              onClick={handleLogout}
+              style={{
+                ...buttonStyles.danger,
+                padding: "8px 20px",
+                fontSize: "14px",
+              }}
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
+      </div>
 
-        {/* Cambiar contraseña */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "15px",
-            padding: "25px",
-            marginBottom: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
+      {/* Contenido principal */}
+      <div style={{ padding: "40px 20px" }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          <div
             style={{
-              margin: "0 0 20px 0",
-              paddingBottom: "10px",
-              borderBottom: `2px solid #E5DDE2`,
-              color: "#3D0026",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "30px",
+              paddingBottom: "15px",
+              borderBottom: `3px solid #DFD777`,
             }}
           >
-            Cambiar contraseña
-          </h3>
-
-          {!mostrarCambioPassword ? (
+            <h1 style={{ color: "#3D0026" }}>Mi Perfil</h1>
             <button
-              onClick={() => setMostrarCambioPassword(true)}
-              style={{ ...buttonStyles.info, padding: "10px 20px" }}
+              onClick={irMisPedidos}
+              style={{
+                ...buttonStyles.info,
+                padding: "10px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "14px",
+              }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#6B5505")
               }
@@ -582,327 +482,42 @@ export default function Perfil() {
                 (e.currentTarget.style.backgroundColor = "#7C6406")
               }
             >
-              Cambiar contraseña
+              Mis pedidos
             </button>
-          ) : (
-            <form onSubmit={handleCambiarPassword}>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Contraseña actual:
-                </label>
-                <input
-                  type="password"
-                  name="password_actual"
-                  value={passwordData.password_actual}
-                  onChange={handlePasswordChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Nueva contraseña:
-                </label>
-                <input
-                  type="password"
-                  name="password_nueva"
-                  value={passwordData.password_nueva}
-                  onChange={handlePasswordChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-                <small style={{ color: "#9C7C77" }}>Mínimo 6 caracteres</small>
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Confirmar nueva contraseña:
-                </label>
-                <input
-                  type="password"
-                  name="password_nueva_confirmation"
-                  value={passwordData.password_nueva_confirmation}
-                  onChange={handlePasswordChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  type="submit"
-                  style={{ ...buttonStyles.primary, padding: "10px 20px" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#C9BE5E")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#DFD777")
-                  }
-                >
-                  Cambiar contraseña
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMostrarCambioPassword(false);
-                    setPasswordData({
-                      password_actual: "",
-                      password_nueva: "",
-                      password_nueva_confirmation: "",
-                    });
-                  }}
-                  style={{ ...buttonStyles.danger, padding: "10px 20px" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#8B6B66")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9C7C77")
-                  }
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+          </div>
 
-        {/* Dirección de facturación */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "15px",
-            padding: "25px",
-            marginBottom: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              margin: "0 0 20px 0",
-              paddingBottom: "10px",
-              borderBottom: `2px solid #E5DDE2`,
-              color: "#3D0026",
-            }}
-          >
-            Dirección de facturación
-          </h3>
-
-          {direccionFacturacion ? (
-            <div>
-              <p style={{ margin: "8px 0", color: "#3D0026" }}>
-                <strong>Dirección:</strong> {direccionFacturacion.direccion}
-              </p>
-              <p style={{ margin: "8px 0", color: "#3D0026" }}>
-                <strong>Código Postal:</strong>{" "}
-                {direccionFacturacion.codigoPostal}
-              </p>
-              <p style={{ margin: "8px 0", color: "#3D0026" }}>
-                <strong>Ciudad:</strong> {direccionFacturacion.ciudad}
-              </p>
-              <p style={{ margin: "8px 0", color: "#3D0026" }}>
-                <strong>Provincia:</strong> {direccionFacturacion.provincia}
-              </p>
-              <button
-                onClick={() => handleEditarDireccion(direccionFacturacion)}
-                style={{
-                  ...buttonStyles.warning,
-                  padding: "8px 20px",
-                  marginTop: "10px",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#C9BE5E")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#DFD777")
-                }
-              >
-                Editar
-              </button>
-            </div>
-          ) : (
-            <p style={{ color: "#9C7C77" }}>
-              No hay dirección de facturación configurada.
-            </p>
-          )}
-        </div>
-
-        {/* Otras direcciones */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "15px",
-            padding: "25px",
-            marginBottom: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h3
-            style={{
-              margin: "0 0 20px 0",
-              paddingBottom: "10px",
-              borderBottom: `2px solid #E5DDE2`,
-              color: "#3D0026",
-            }}
-          >
-            Otras direcciones de envío
-          </h3>
-
-          {otrasDirecciones.length === 0 ? (
-            <p style={{ color: "#9C7C77" }}>
-              No hay otras direcciones guardadas.
-            </p>
-          ) : (
+          {/* Mensajes */}
+          {mensaje && (
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+              style={{
+                backgroundColor: "#DFD777",
+                color: "#3D0026",
+                padding: "12px 20px",
+                borderRadius: "10px",
+                marginBottom: "20px",
+                borderLeft: `4px solid #3D0026`,
+                fontWeight: "500",
+              }}
             >
-              {otrasDirecciones.map((dir) => (
-                <div
-                  key={dir.id}
-                  style={{
-                    border: `1px solid #E5DDE2`,
-                    borderRadius: "10px",
-                    padding: "15px",
-                    backgroundColor: "#FAFAFA",
-                  }}
-                >
-                  <p style={{ margin: "5px 0", color: "#3D0026" }}>
-                    <strong>Dirección:</strong> {dir.direccion}
-                  </p>
-                  <p style={{ margin: "5px 0", color: "#3D0026" }}>
-                    <strong>Código Postal:</strong> {dir.codigoPostal}
-                  </p>
-                  <p style={{ margin: "5px 0", color: "#3D0026" }}>
-                    <strong>Ciudad:</strong> {dir.ciudad}
-                  </p>
-                  <p style={{ margin: "5px 0", color: "#3D0026" }}>
-                    <strong>Provincia:</strong> {dir.provincia}
-                  </p>
-                  <div
-                    style={{ display: "flex", gap: "10px", marginTop: "10px" }}
-                  >
-                    <button
-                      onClick={() => handleEditarDireccion(dir)}
-                      style={{
-                        ...buttonStyles.warning,
-                        padding: "6px 12px",
-                        fontSize: "13px",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#C9BE5E")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#DFD777")
-                      }
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => eliminarDireccion(dir.id)}
-                      style={{
-                        ...buttonStyles.danger,
-                        padding: "6px 12px",
-                        fontSize: "13px",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#8B6B66")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#9C7C77")
-                      }
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              ))}
+              ¡Éxito! {mensaje}
             </div>
           )}
-        </div>
+          {error && (
+            <div
+              style={{
+                backgroundColor: "#9C7C77",
+                color: "white",
+                padding: "12px 20px",
+                borderRadius: "10px",
+                marginBottom: "20px",
+                borderLeft: `4px solid #3D0026`,
+              }}
+            >
+              Error: {error}
+            </div>
+          )}
 
-        {/* Añadir nueva dirección */}
-        {!mostrarFormDireccion && (
-          <button
-            onClick={() => setMostrarFormDireccion(true)}
-            style={{
-              ...buttonStyles.primary,
-              padding: "12px 24px",
-              marginBottom: "30px",
-              width: "100%",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#C9BE5E")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#DFD777")
-            }
-          >
-            Añadir nueva dirección
-          </button>
-        )}
-
-        {/* Formulario de dirección */}
-        {mostrarFormDireccion && (
+          {/* Datos personales */}
           <div
             style={{
               backgroundColor: "white",
@@ -912,162 +527,32 @@ export default function Perfil() {
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             }}
           >
-            <h3 style={{ margin: "0 0 20px 0", color: "#3D0026" }}>
-              {direccionEditando ? "Editar dirección" : "Nueva dirección"}
+            <h3
+              style={{
+                margin: "0 0 20px 0",
+                paddingBottom: "10px",
+                borderBottom: `2px solid #E5DDE2`,
+                color: "#3D0026",
+              }}
+            >
+              Datos personales
             </h3>
-            <form onSubmit={guardarDireccion}>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Dirección:
-                </label>
-                <input
-                  type="text"
-                  name="direccion"
-                  value={nuevaDireccion.direccion}
-                  onChange={handleDireccionChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Código Postal:
-                </label>
-                <input
-                  type="text"
-                  name="codigoPostal"
-                  value={nuevaDireccion.codigoPostal}
-                  onChange={handleDireccionChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Ciudad:
-                </label>
-                <input
-                  type="text"
-                  name="ciudad"
-                  value={nuevaDireccion.ciudad}
-                  onChange={handleDireccionChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "bold",
-                    color: "#3D0026",
-                  }}
-                >
-                  Provincia:
-                </label>
-                <input
-                  type="text"
-                  name="provincia"
-                  value={nuevaDireccion.provincia}
-                  onChange={handleDireccionChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    border: `2px solid #E5DDE2`,
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    outline: "none",
-                    transition: "border-color 0.3s ease",
-                  }}
-                  onFocus={(e) =>
-                    (e.currentTarget.style.borderColor = "#DFD777")
-                  }
-                  onBlur={(e) =>
-                    (e.currentTarget.style.borderColor = "#E5DDE2")
-                  }
-                />
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <label style={{ color: "#3D0026", cursor: "pointer" }}>
-                  <input
-                    type="checkbox"
-                    name="facturacion"
-                    checked={nuevaDireccion.facturacion}
-                    onChange={handleDireccionChange}
-                    style={{ marginRight: "8px", cursor: "pointer" }}
-                  />
-                  Usar como dirección de facturación
-                </label>
-              </div>
-              <div style={{ display: "flex", gap: "10px" }}>
+
+            {!modoEdicion ? (
+              <div>
+                <p style={{ margin: "10px 0", color: "#3D0026" }}>
+                  <strong>Nombre:</strong> {usuario.nombre}
+                </p>
+                <p style={{ margin: "10px 0", color: "#3D0026" }}>
+                  <strong>Email:</strong> {usuario.email}
+                </p>
                 <button
-                  type="submit"
-                  style={{ ...buttonStyles.primary, padding: "10px 20px" }}
+                  onClick={() => setModoEdicion(true)}
+                  style={{
+                    ...buttonStyles.warning,
+                    padding: "8px 20px",
+                    marginTop: "10px",
+                  }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = "#C9BE5E")
                   }
@@ -1075,86 +560,726 @@ export default function Perfil() {
                     (e.currentTarget.style.backgroundColor = "#DFD777")
                   }
                 >
-                  Guardar dirección
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMostrarFormDireccion(false);
-                    setDireccionEditando(null);
-                    setNuevaDireccion({
-                      direccion: "",
-                      codigoPostal: "",
-                      ciudad: "",
-                      provincia: "",
-                      facturacion: false,
-                    });
-                  }}
-                  style={{ ...buttonStyles.danger, padding: "10px 20px" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#8B6B66")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9C7C77")
-                  }
-                >
-                  Cancelar
+                  Editar perfil
                 </button>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Nombre Completo:
+                  </label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={usuario.nombre}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Email:
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={usuario.email}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    type="submit"
+                    style={{ ...buttonStyles.primary, padding: "10px 20px" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#C9BE5E")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#DFD777")
+                    }
+                  >
+                    Guardar Cambios
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModoEdicion(false)}
+                    style={{ ...buttonStyles.danger, padding: "10px 20px" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#8B6B66")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#9C7C77")
+                    }
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-        )}
 
-        {/* Botones de acción finales */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "30px",
-            paddingTop: "20px",
-            borderTop: `2px solid #DFD777`,
-            flexWrap: "wrap",
-            gap: "15px",
-          }}
-        >
-          <button
-            onClick={volver}
+          {/* Cambiar contraseña */}
+          <div
             style={{
-              ...buttonStyles.accent,
-              padding: "12px 24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
+              backgroundColor: "white",
+              borderRadius: "15px",
+              padding: "25px",
+              marginBottom: "30px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#6B5505")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#7C6406")
-            }
           >
-            ← Volver a productos
-          </button>
+            <h3
+              style={{
+                margin: "0 0 20px 0",
+                paddingBottom: "10px",
+                borderBottom: `2px solid #E5DDE2`,
+                color: "#3D0026",
+              }}
+            >
+              Cambiar contraseña
+            </h3>
 
-          <button
-            onClick={eliminarMiCuenta}
+            {!mostrarCambioPassword ? (
+              <button
+                onClick={() => setMostrarCambioPassword(true)}
+                style={{ ...buttonStyles.info, padding: "10px 20px" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#6B5505")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#7C6406")
+                }
+              >
+                Cambiar contraseña
+              </button>
+            ) : (
+              <form onSubmit={handleCambiarPassword}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Contraseña actual:
+                  </label>
+                  <input
+                    type="password"
+                    name="password_actual"
+                    value={passwordData.password_actual}
+                    onChange={handlePasswordChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Nueva contraseña:
+                  </label>
+                  <input
+                    type="password"
+                    name="password_nueva"
+                    value={passwordData.password_nueva}
+                    onChange={handlePasswordChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                  <small style={{ color: "#9C7C77" }}>
+                    Mínimo 6 caracteres
+                  </small>
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Confirmar nueva contraseña:
+                  </label>
+                  <input
+                    type="password"
+                    name="password_nueva_confirmation"
+                    value={passwordData.password_nueva_confirmation}
+                    onChange={handlePasswordChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    type="submit"
+                    style={{ ...buttonStyles.primary, padding: "10px 20px" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#C9BE5E")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#DFD777")
+                    }
+                  >
+                    Cambiar contraseña
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMostrarCambioPassword(false);
+                      setPasswordData({
+                        password_actual: "",
+                        password_nueva: "",
+                        password_nueva_confirmation: "",
+                      });
+                    }}
+                    style={{ ...buttonStyles.danger, padding: "10px 20px" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#8B6B66")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#9C7C77")
+                    }
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* Dirección de facturación */}
+          <div
             style={{
-              ...buttonStyles.danger,
-              padding: "12px 24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
+              backgroundColor: "white",
+              borderRadius: "15px",
+              padding: "25px",
+              marginBottom: "30px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#8B6B66")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#9C7C77")
-            }
           >
-            Eliminar mi cuenta (RGPD)
-          </button>
+            <h3
+              style={{
+                margin: "0 0 20px 0",
+                paddingBottom: "10px",
+                borderBottom: `2px solid #E5DDE2`,
+                color: "#3D0026",
+              }}
+            >
+              Dirección de facturación
+            </h3>
+
+            {direccionFacturacion ? (
+              <div>
+                <p style={{ margin: "8px 0", color: "#3D0026" }}>
+                  <strong>Dirección:</strong> {direccionFacturacion.direccion}
+                </p>
+                <p style={{ margin: "8px 0", color: "#3D0026" }}>
+                  <strong>Código Postal:</strong>{" "}
+                  {direccionFacturacion.codigoPostal}
+                </p>
+                <p style={{ margin: "8px 0", color: "#3D0026" }}>
+                  <strong>Ciudad:</strong> {direccionFacturacion.ciudad}
+                </p>
+                <p style={{ margin: "8px 0", color: "#3D0026" }}>
+                  <strong>Provincia:</strong> {direccionFacturacion.provincia}
+                </p>
+                <button
+                  onClick={() => handleEditarDireccion(direccionFacturacion)}
+                  style={{
+                    ...buttonStyles.warning,
+                    padding: "8px 20px",
+                    marginTop: "10px",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#C9BE5E")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#DFD777")
+                  }
+                >
+                  Editar
+                </button>
+              </div>
+            ) : (
+              <p style={{ color: "#9C7C77" }}>
+                No hay dirección de facturación configurada.
+              </p>
+            )}
+          </div>
+
+          {/* Otras direcciones */}
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "15px",
+              padding: "25px",
+              marginBottom: "30px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            }}
+          >
+            <h3
+              style={{
+                margin: "0 0 20px 0",
+                paddingBottom: "10px",
+                borderBottom: `2px solid #E5DDE2`,
+                color: "#3D0026",
+              }}
+            >
+              Otras direcciones de envío
+            </h3>
+
+            {otrasDirecciones.length === 0 ? (
+              <p style={{ color: "#9C7C77" }}>
+                No hay otras direcciones guardadas.
+              </p>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "15px",
+                }}
+              >
+                {otrasDirecciones.map((dir) => (
+                  <div
+                    key={dir.id}
+                    style={{
+                      border: `1px solid #E5DDE2`,
+                      borderRadius: "10px",
+                      padding: "15px",
+                      backgroundColor: "#FAFAFA",
+                    }}
+                  >
+                    <p style={{ margin: "5px 0", color: "#3D0026" }}>
+                      <strong>Dirección:</strong> {dir.direccion}
+                    </p>
+                    <p style={{ margin: "5px 0", color: "#3D0026" }}>
+                      <strong>Código Postal:</strong> {dir.codigoPostal}
+                    </p>
+                    <p style={{ margin: "5px 0", color: "#3D0026" }}>
+                      <strong>Ciudad:</strong> {dir.ciudad}
+                    </p>
+                    <p style={{ margin: "5px 0", color: "#3D0026" }}>
+                      <strong>Provincia:</strong> {dir.provincia}
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        marginTop: "10px",
+                      }}
+                    >
+                      <button
+                        onClick={() => handleEditarDireccion(dir)}
+                        style={{
+                          ...buttonStyles.warning,
+                          padding: "6px 12px",
+                          fontSize: "13px",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#C9BE5E")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#DFD777")
+                        }
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => eliminarDireccion(dir.id)}
+                        style={{
+                          ...buttonStyles.danger,
+                          padding: "6px 12px",
+                          fontSize: "13px",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#8B6B66")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#9C7C77")
+                        }
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Añadir nueva dirección */}
+          {!mostrarFormDireccion && (
+            <button
+              onClick={() => setMostrarFormDireccion(true)}
+              style={{
+                ...buttonStyles.primary,
+                padding: "12px 24px",
+                marginBottom: "30px",
+                width: "100%",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#C9BE5E")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#DFD777")
+              }
+            >
+              Añadir nueva dirección
+            </button>
+          )}
+
+          {/* Formulario de dirección */}
+          {mostrarFormDireccion && (
+            <div
+              style={{
+                backgroundColor: "white",
+                borderRadius: "15px",
+                padding: "25px",
+                marginBottom: "30px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              }}
+            >
+              <h3 style={{ margin: "0 0 20px 0", color: "#3D0026" }}>
+                {direccionEditando ? "Editar dirección" : "Nueva dirección"}
+              </h3>
+              <form onSubmit={guardarDireccion}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Dirección:
+                  </label>
+                  <input
+                    type="text"
+                    name="direccion"
+                    value={nuevaDireccion.direccion}
+                    onChange={handleDireccionChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Código Postal:
+                  </label>
+                  <input
+                    type="text"
+                    name="codigoPostal"
+                    value={nuevaDireccion.codigoPostal}
+                    onChange={handleDireccionChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Ciudad:
+                  </label>
+                  <input
+                    type="text"
+                    name="ciudad"
+                    value={nuevaDireccion.ciudad}
+                    onChange={handleDireccionChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                      color: "#3D0026",
+                    }}
+                  >
+                    Provincia:
+                  </label>
+                  <input
+                    type="text"
+                    name="provincia"
+                    value={nuevaDireccion.provincia}
+                    onChange={handleDireccionChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: `2px solid #E5DDE2`,
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s ease",
+                    }}
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#DFD777")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "#E5DDE2")
+                    }
+                  />
+                </div>
+                <div style={{ marginBottom: "20px" }}>
+                  <label style={{ color: "#3D0026", cursor: "pointer" }}>
+                    <input
+                      type="checkbox"
+                      name="facturacion"
+                      checked={nuevaDireccion.facturacion}
+                      onChange={handleDireccionChange}
+                      style={{ marginRight: "8px", cursor: "pointer" }}
+                    />
+                    Usar como dirección de facturación
+                  </label>
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    type="submit"
+                    style={{ ...buttonStyles.primary, padding: "10px 20px" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#C9BE5E")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#DFD777")
+                    }
+                  >
+                    Guardar dirección
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMostrarFormDireccion(false);
+                      setDireccionEditando(null);
+                      setNuevaDireccion({
+                        direccion: "",
+                        codigoPostal: "",
+                        ciudad: "",
+                        provincia: "",
+                        facturacion: false,
+                      });
+                    }}
+                    style={{ ...buttonStyles.danger, padding: "10px 20px" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#8B6B66")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#9C7C77")
+                    }
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Botones de acción finales */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "30px",
+              paddingTop: "20px",
+              borderTop: `2px solid #DFD777`,
+              flexWrap: "wrap",
+              gap: "15px",
+            }}
+          >
+            <button
+              onClick={volver}
+              style={{
+                ...buttonStyles.accent,
+                padding: "12px 24px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#6B5505")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#7C6406")
+              }
+            >
+              ← Volver a productos
+            </button>
+
+            <button
+              onClick={eliminarMiCuenta}
+              style={{
+                ...buttonStyles.danger,
+                padding: "12px 24px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#8B6B66")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#9C7C77")
+              }
+            >
+              Eliminar mi cuenta (RGPD)
+            </button>
+          </div>
         </div>
       </div>
     </div>
