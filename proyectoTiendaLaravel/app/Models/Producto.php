@@ -140,7 +140,7 @@ class Producto extends Model
             Precio as precio, 
             IVA as iva,
             Categoria as categoria, 
-            Stock as stock 
+            Stock as stock ,
             URL_imagenes as url_imagenes
             FROM productos
             WHERE ID_producto = ?";
