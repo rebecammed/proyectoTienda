@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173', 'https://proyecto-tienda-sigma.vercel.app'],
+    'allowed_origins' => ['http://localhost:5173', 'https://proyecto-tienda-sigma.vercel.app', 'https://proyectotienda-m8um.onrender.com',],
 
     'allowed_origins_patterns' => [],
 
