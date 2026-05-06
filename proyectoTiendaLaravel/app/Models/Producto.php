@@ -20,9 +20,10 @@ class Producto extends Model
     public $iva;
     public $stock;
     public $categoria;
+    public $url_imagenes;
 
     // Constructor (adaptado a Laravel)
-    public function __construct($id = null, $nombre = null, $descripcion = null, $precio = null, $iva = null, $stock = null, $categoria = null)
+    public function __construct($id = null, $nombre = null, $descripcion = null, $precio = null, $iva = null, $stock = null, $categoria = null, $url_imagenes = null)
     {
         parent::__construct();
 
@@ -33,6 +34,7 @@ class Producto extends Model
         $this->iva = $iva !== null ? (float)$iva : 21;
         $this->stock = $stock;
         $this->categoria = $categoria;
+        $this->url_imagenes = $url_imagenes;
     }
 
     // Getters
@@ -87,6 +89,10 @@ class Producto extends Model
         return $this->categoria;
     }
 
+    public function getImagenes()
+    {
+        return $this->url_imagenes;
+    }
     // Setters
     public function setStock($s)
     {
@@ -108,7 +114,7 @@ class Producto extends Model
     // Métodos estáticos adaptados a Laravel
     public static function getAll()
     {
-        $sql = "SELECT ID_producto as id, Nombre as nombre, Descripcion_producto as descripcion, Precio as precio, IVA as iva,Categoria as categoria, Stock as stock FROM productos";
+        $sql = "SELECT ID_producto as id, Nombre as nombre, Descripcion_producto as descripcion, Precio as precio, IVA as iva,Categoria as categoria, Stock as stock, URL_imagenes as url_imagenes FROM productos";
 
         $result = DB::select($sql);
 
@@ -135,6 +141,7 @@ class Producto extends Model
             IVA as iva,
             Categoria as categoria, 
             Stock as stock 
+            URL_imagenes as url_imagenes
             FROM productos
             WHERE ID_producto = ?";
 
@@ -159,7 +166,8 @@ class Producto extends Model
             $data->precio,
             $data->iva,
             $data->stock,
-            $data->categoria
+            $data->categoria,
+            $data->url_imagenes
         );
 
         return $p;

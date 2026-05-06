@@ -26,7 +26,8 @@ class ProductoController extends Controller
                 'iva' => $producto['iva'],
                 'precioConIva' => round($precioConIva, 2), // ← AÑADIR ESTO
                 'stock' => $producto['stock'],
-                'categoria' => $producto['categoria']
+                'categoria' => $producto['categoria'],
+                'url_imagenes' => $producto['url_imagenes']
             ];
         }
 
@@ -62,7 +63,8 @@ class ProductoController extends Controller
                 'iva' => $producto->getIva(),
                 'precioConIva' => $precioConIva,
                 'stock' => $producto->getStock(),
-                'categoria' => $producto->getCategoria()
+                'categoria' => $producto->getCategoria(),
+                'url_imagenes' => $producto->getImagenes()
             ]
         ]);
     }
