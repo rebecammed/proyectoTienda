@@ -3,7 +3,7 @@ import { Link, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import UserList from "./UserList";
 import ProductList from "./ProductList";
-import logoEmpresa from "../../public/Tienda_logo.png";
+import logoEmpresa from "/Tienda_logo.png";
 
 const AdminPanel = () => {
   const { usuario, logout } = useAuth();

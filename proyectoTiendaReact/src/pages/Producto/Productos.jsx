@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import ProductCard from "./ProductCard";
 
 // Importa tu logo
-import logoEmpresa from "../../public/Tienda_logo.png";
+import logoEmpresa from "/Tienda_logo.png";
 
 function Productos() {
   const [productos, setProductos] = useState([]);

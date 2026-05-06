@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import logoEmpresa from "../../public/Tienda_logo.png";
+import logoEmpresa from "/Tienda_logo.png";
 
 // Importa las fotos por defecto para cada categoría
-import fotoBolsos from "../../public/bolso.png";
-import fotoPendientes from "../../public/pendientes.jpg";
-import fotoCharms from "../../public/charm.jpg";
+import fotoBolsos from "/bolso.png";
+import fotoPendientes from "/pendientes.jpg";
+import fotoCharms from "/charm.jpg";
 
 function DetalleProducto() {
   const { id } = useParams();

@@ -2,10 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 // Importa tus imágenes
-import logoEmpresa from "../../public/Tienda_logo.png";
-import fotoBolsos from "../../public/bolso.png";
-import fotoPendientes from "../../public/pendientes.jpg";
-import fotoCharms from "../../public/charm.jpg";
+import logoEmpresa from "/Tienda_logo.png";
+import fotoBolsos from "/bolso.png";
+import fotoPendientes from "/pendientes.jpg";
+import fotoCharms from "/charm.jpg";
 
 function LandingPage() {
   const { isLoggedIn, loading: authLoading, logout, esAdmin } = useAuth();
