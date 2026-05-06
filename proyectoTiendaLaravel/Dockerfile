@@ -24,9 +24,7 @@ COPY . .
 
 # Instalar dependencias Laravel
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan route:clear
+
 
 # Configurar Apache para Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
