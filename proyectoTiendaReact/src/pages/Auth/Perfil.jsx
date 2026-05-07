@@ -230,17 +230,13 @@ export default function Perfil() {
   const guardarDireccion = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Si es edición, incluir el ID en la URL
-    const url = direccionEditando
-      ? `/direcciones/${direccionEditando.id}`
-      : "/direcciones";
-    console.log("URL:", url);
-    console.log("direccionEditando:", direccionEditando);
+    const bodyData = direccionEditando
+      ? { id: direccionEditando.id, ...nuevaDireccion }
+      : nuevaDireccion;
     const method = direccionEditando ? "PUT" : "POST";
-    const res = await authFetch(url, {
+    const res = await authFetch("/direcciones", {
       method: method,
-      body: JSON.stringify(nuevaDireccion),
+      body: JSON.stringify(bodyData),
     });
 
     const data = await res.json();
