@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Direccion;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Log;
 
 class DireccionController extends Controller
 {
@@ -58,6 +59,7 @@ class DireccionController extends Controller
 
     public function actualizarDireccion(Request $request, $id)
     {
+        Log::info('actualizarDireccion llamado', ['id' => $id, 'user_id' => $this->getUserId()]);
         $userId = $this->getUserId();
         if (!$userId) {
             return response()->json([

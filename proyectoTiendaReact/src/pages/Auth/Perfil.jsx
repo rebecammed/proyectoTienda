@@ -235,7 +235,8 @@ export default function Perfil() {
     const url = direccionEditando
       ? `/direcciones/${direccionEditando.id}`
       : "/direcciones";
-
+    console.log("URL:", url);
+    console.log("direccionEditando:", direccionEditando);
     const method = direccionEditando ? "PUT" : "POST";
     const res = await authFetch(url, {
       method: method,
