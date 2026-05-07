@@ -27,6 +27,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('/perfil', [AuthController::class, 'obtenerPerfil']);
     Route::put('/perfil', [AuthController::class, 'actualizarPerfil']);
     Route::delete('/perfil', [AuthController::class, 'eliminarCuenta']);
+    Route::post('/cambiar-password', [AuthController::class, 'cambiarPassword']);
 
     // Carrito
     Route::get('/carrito', [CarritoController::class, 'getCarrito']);

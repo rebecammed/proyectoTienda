@@ -12,6 +12,15 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
+    private function getUserId()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            return $user ? $user->ID_usuario : null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
     public function login(Request $request)
     {
         Log::info('Login intentado', $request->only('usuario'));
@@ -249,6 +258,54 @@ class AuthController extends Controller
                 'Password_hash' => Hash::make($newPassword),
                 'Reset_token' => null,
                 'Reset_expira' => null
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Contraseña actualizada correctamente'
+        ]);
+    }
+
+    public function cambiarPassword(Request $request)
+    {
+        $userId = $this->getUserId(); // Necesitas este método
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No autenticado'
+            ], 401);
+        }
+
+        $request->validate([
+            'password_actual' => 'required|string',
+            'password_nueva' => 'required|string|min:6'
+        ]);
+
+        // Obtener el usuario de la base de datos
+        $usuario = DB::table('usuarios')
+            ->where('ID_usuario', $userId)
+            ->first();
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'Usuario no encontrado'
+            ], 404);
+        }
+
+        // Verificar contraseña actual
+        if (!Hash::check($request->password_actual, $usuario->Password_hash)) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'La contraseña actual es incorrecta'
+            ], 401);
+        }
+
+        // Actualizar contraseña
+        DB::table('usuarios')
+            ->where('ID_usuario', $userId)
+            ->update([
+                'Password_hash' => Hash::make($request->password_nueva)
             ]);
 
         return response()->json([
