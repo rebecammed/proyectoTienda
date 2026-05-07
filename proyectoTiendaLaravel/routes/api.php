@@ -40,7 +40,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/direcciones', [DireccionController::class, 'crearDireccion']);
     Route::delete('/direcciones/{id}', [DireccionController::class, 'eliminarDireccion']);
 
-    // Pedido
+    // Pedido   
     Route::post('/pedido/confirmar', [PedidoController::class, 'confirmarPedido']);
     Route::get('/pedidos', [PedidoController::class, 'misPedidos']);
     Route::get('/pedidos/{id}', [PedidoController::class, 'detallePedido']);
@@ -53,8 +53,8 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     // Usuarios
     Route::get('/usuarios', [AdminController::class, 'getUsuarios']);
     Route::get('/usuarios/{id}', [AdminController::class, 'getUsuario']);
-    Route::put('/admin/usuarios/{id}/estado', [AdminController::class, 'toggleUsuarioEstado']);
-    Route::delete('/admin/usuarios/{id}/eliminar', [AdminController::class, 'eliminarCuentaAdmin']);
+    Route::put('/usuarios/{id}/estado', [AdminController::class, 'toggleUsuarioEstado']);
+    Route::delete('/usuarios/{id}/eliminar', [AdminController::class, 'eliminarCuentaAdmin']);
 
     // Productos
     Route::post('/productos', [AdminController::class, 'createProducto']);

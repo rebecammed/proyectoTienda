@@ -77,16 +77,16 @@ function Carrito() {
 
   const cargarCarrito = async () => {
     try {
-      const res = await authFetch("/carrito", {
-        method: "GET",
-      });
+      const res = await authFetch("/carrito", { method: "GET" });
       const data = await res.json();
+
       if (data.success !== false) {
         setCarrito(data.carrito || []);
-        setPrecioConIva(data.precioConIva || 0);
-        setPrecioTotal(data.precioTotal || 0);
+        setPrecioTotal(data.precioTotal || 0); // ← precioTotal ya existe
         setPrecioSinIva(data.precioSinIva || 0);
         setIvaTotal(data.ivaTotal || 0);
+        // precioConIva no existe en la respuesta, lo calculamos
+        setPrecioConIva(data.precioTotal || 0); // ← usa precioTotal
       }
     } catch (error) {
       console.error("Error al cargar carrito:", error);

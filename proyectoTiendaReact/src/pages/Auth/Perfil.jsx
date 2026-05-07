@@ -231,9 +231,8 @@ export default function Perfil() {
     e.preventDefault();
     setError("");
 
-    const url = "https://proyectotienda-m8um.onrender.com/api/direcciones";
     const method = direccionEditando ? "PUT" : "POST";
-    const res = await authFetch(url, {
+    const res = await authFetch("/direcciones", {
       method: method,
       body: JSON.stringify(nuevaDireccion),
     });
@@ -259,7 +258,7 @@ export default function Perfil() {
 
   const eliminarDireccion = async (id) => {
     if (!confirm("¿Estás seguro de eliminar esta dirección?")) return;
-    const res = await authFetch("/direcciones/${id}", {
+    const res = await authFetch(`/direcciones/${id}`, {
       method: "DELETE",
     });
 
