@@ -54,13 +54,6 @@ class AdminController extends Controller
      */
     public function getUsuarios()
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
-
         $usuarios = DB::table('usuarios')
             ->select('ID_usuario', 'Email', 'Nombre_completo', 'Rol', 'Activo', 'Fecha_creacion', 'Fecha_baja')
             ->get();
@@ -77,12 +70,6 @@ class AdminController extends Controller
      */
     public function createProducto(Request $request)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $request->validate([
             'nombre' => 'required|string|max:50',
@@ -117,12 +104,6 @@ class AdminController extends Controller
      */
     public function updateProducto(Request $request, $id)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $request->validate([
             'nombre' => 'sometimes|string|max:50',
@@ -168,12 +149,6 @@ class AdminController extends Controller
      */
     public function deleteProducto($id)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $producto = Producto::getById($id);
 
@@ -200,12 +175,6 @@ class AdminController extends Controller
      */
     public function getPedidos()
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $pedidos = DB::table('pedidos as p')
             ->leftJoin('usuarios as u', 'p.ID_usuario', '=', 'u.ID_usuario')
@@ -234,12 +203,6 @@ class AdminController extends Controller
      */
     public function getPedidosByUser($id)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $pedidos = DB::table('pedidos')
             ->where('ID_usuario', $id)
@@ -312,12 +275,6 @@ class AdminController extends Controller
      */
     public function getUsuario($id)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $usuario = DB::table('usuarios')
             ->select('ID_usuario', 'Email', 'Nombre_completo', 'Rol', 'Activo', 'Fecha_creacion', 'Fecha_baja')
@@ -343,12 +300,6 @@ class AdminController extends Controller
      */
     public function toggleUsuarioEstado($id, Request $request)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $request->validate([
             'activo' => 'required|boolean'
@@ -383,12 +334,6 @@ class AdminController extends Controller
      */
     public function eliminarCuentaAdmin($id)
     {
-        if (session()->get('rol') !== 'ADMIN') {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Acceso denegado'
-            ], 403);
-        }
 
         $usuario = DB::table('usuarios')
             ->where('ID_usuario', $id)
