@@ -56,7 +56,7 @@ class DireccionController extends Controller
         ]);
     }
 
-    public function actualizarDireccion(Request $request)
+    public function actualizarDireccion(Request $request, $id)
     {
         $userId = $this->getUserId();
         if (!$userId) {
@@ -67,7 +67,6 @@ class DireccionController extends Controller
         }
 
         $request->validate([
-            'id' => 'required|integer',
             'direccion' => 'required|string',
             'codigoPostal' => 'required|string',
             'ciudad' => 'required|string',
@@ -75,9 +74,9 @@ class DireccionController extends Controller
             'facturacion' => 'required|boolean'
         ]);
 
-        $dirId = $request->input('id');
 
-        $direccion = Direccion::getById($dirId, $userId);
+
+        $direccion = Direccion::getById($id, $userId);
 
         if (!$direccion) {
             return response()->json([
