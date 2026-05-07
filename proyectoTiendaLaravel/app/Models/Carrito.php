@@ -29,6 +29,7 @@ class Carrito
         if (!$p) {
             throw new \Exception("Producto inválido: es null");
         }
+        Log::info('addProd - Producto recibido:', ['id' => $p->getId(), 'nombre' => $p->getNombre()]);
 
         if (is_array($p)) {
             throw new \Exception("Producto es un array, debería ser un objeto Producto");
@@ -76,6 +77,7 @@ class Carrito
         }
 
         session()->put('carrito_productos', $this->productos);
+        Log::info('addProd - Productos después de añadir:', $this->productos);
     }
 
     public function delProd($id)

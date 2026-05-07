@@ -99,7 +99,7 @@ class CarritoController extends Controller
 
             // Obtener el producto de la base de datos
             $producto = Producto::getById($request->input('id'));
-
+            Log::info('Producto encontrado: ', ['id' => $producto->getId(), 'nombre' => $producto->getNombre()]);
             if (!$producto) {
                 return response()->json([
                     'success' => false,
@@ -108,9 +108,10 @@ class CarritoController extends Controller
             }
 
             $carrito = session()->get('carrito');
-            Log::info('Carrito después de añadir: ', $carrito->getCarrito());
+            Log::info('Carrito ANTES de addProd: ', $carrito->getCarrito());
             try {
                 $carrito->addProd($producto);
+                Log::info('Carrito DESPUÉS de addProd: ', $carrito->getCarrito());
             } catch (\Exception $e) {
                 return response()->json([
                     'success' => false,
