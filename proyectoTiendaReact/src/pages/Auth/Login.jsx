@@ -37,10 +37,6 @@ const Login = () => {
     setError("");
     setCargando(true);
 
-    // Limpiar localStorage antes de intentar login
-    localStorage.removeItem("usuario");
-    localStorage.removeItem("rol");
-
     try {
       const response = await fetch(
         "https://proyectotienda-m8um.onrender.com/api/login",
@@ -53,21 +49,22 @@ const Login = () => {
             usuario: usuario,
             contrasena: contrasena,
           }),
-          credentials: "include",
         },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        const nombreUsuario = data.usuario;
-        const rolUsuario = data.rol || "USER";
+        // Guardar el token en localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("usuario", data.usuario);
+        localStorage.setItem("rol", data.rol || "USER");
 
-        // Guardar en contexto y localStorage
-        login(nombreUsuario, rolUsuario);
+        // Actualizar el contexto
+        login(data.usuario, data.rol || "USER");
 
-        // Redirigir según el rol
-        if (rolUsuario === "ADMIN") {
+        // Redirigir
+        if (data.rol === "ADMIN") {
           navigate("/admin");
         } else {
           navigate("/productos");
