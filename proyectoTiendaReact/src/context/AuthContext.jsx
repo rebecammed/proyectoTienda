@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Función para actualizar el estado después del login (la llama Login.jsx)
-  const setAuthData = (nombreUsuario, rolUsuario) => {
+  const login = (nombreUsuario, rolUsuario) => {
     setUsuario(nombreUsuario);
     setRol(rolUsuario);
     setIsLoggedIn(true);
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         logout,
         esAdmin,
-        setAuthData, // ← nueva función solo para actualizar estado
+        login, // ← nueva función solo para actualizar estado
       }}
     >
       {children}

@@ -8,7 +8,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
-  const { setAuthData } = useAuth();
+  const { login } = useAuth();
 
   // Estilos unificados
   const buttonStyles = {
