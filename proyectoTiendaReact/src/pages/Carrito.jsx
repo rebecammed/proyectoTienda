@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logoEmpresa from "/Tienda_logo.png";
 
+import { authFetch } from "../authFetch";
+
 function Carrito() {
   const [carrito, setCarrito] = useState([]);
   const [precioTotal, setPrecioTotal] = useState(0);
@@ -75,17 +77,9 @@ function Carrito() {
 
   const cargarCarrito = async () => {
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/carrito",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const res = await authFetch("/carrito", {
+        method: "GET",
+      });
       const data = await res.json();
       if (data.success !== false) {
         setCarrito(data.carrito || []);
@@ -102,17 +96,10 @@ function Carrito() {
   const cargarDirecciones = async () => {
     setCargandoDirecciones(true);
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/direcciones",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const res = await authFetch("/direcciones", {
+        method: "GET",
+      });
+
       const data = await res.json();
       if (data.success && data.direcciones) {
         setDirecciones(data.direcciones);
@@ -135,15 +122,11 @@ function Carrito() {
     }
     setActualizando(true);
     try {
-      await fetch("https://proyectotienda-m8um.onrender.com/api/carrito/add", {
+      await authFetch("/carrito/add", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ id: id, cantidad: cantidad }),
       });
+
       await cargarCarrito();
     } catch (error) {
       console.error("Error al añadir producto:", error);
@@ -160,18 +143,11 @@ function Carrito() {
     }
     setActualizando(true);
     try {
-      await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/carrito/remove",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: id }),
-        },
-      );
+      await authFetch("/carrito/remove", {
+        method: "POST",
+        body: JSON.stringify({ id: id }),
+      });
+
       await cargarCarrito();
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -189,9 +165,8 @@ function Carrito() {
     if (!window.confirm("¿Estás seguro de que quieres vaciar el carrito?")) {
       return;
     }
-    await fetch("https://proyectotienda-m8um.onrender.com/api/carrito/clear", {
+    await authFetch("/carrito/clear", {
       method: "POST",
-      credentials: "include",
     });
     setCarrito([]);
     setPrecioTotal(0);
@@ -211,20 +186,13 @@ function Carrito() {
 
     setActualizando(true);
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/pedido/confirmar",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            direccion_id: direccionSeleccionada,
-          }),
-        },
-      );
+      const res = await authFetch("/pedido/confirmar", {
+        method: "POST",
+        body: JSON.stringify({
+          direccion_id: direccionSeleccionada,
+        }),
+      });
+
       const data = await res.json();
       if (data.success) {
         alert("¡Pedido confirmado con éxito!");

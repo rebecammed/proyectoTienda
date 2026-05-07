@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import logoEmpresa from "/Tienda_logo.png";
 
-// Importa las fotos por defecto para cada categoría
 import fotoBolsos from "/bolso.png";
 import fotoPendientes from "/pendientes.jpg";
 import fotoCharms from "/charm.jpg";
@@ -87,13 +86,9 @@ function DetalleProducto() {
     setError("");
 
     try {
-      const res = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/productos/${id}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const res = await authFetch(`/productos/${id}`, {
+        method: "GET",
+      });
 
       const data = await res.json();
 
@@ -123,15 +118,10 @@ function DetalleProducto() {
     }
 
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/carrito/add",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: producto.id, cantidad: cantidad }),
-        },
-      );
+      const res = await authFetch("/carrito/add", {
+        method: "POST",
+        body: JSON.stringify({ id: producto.id, cantidad: cantidad }),
+      });
 
       const data = await res.json();
 

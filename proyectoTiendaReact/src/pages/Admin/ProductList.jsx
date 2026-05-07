@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-
+import { authFetch } from "../authFetch";
 const ProductList = () => {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -73,17 +73,9 @@ const ProductList = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/productos",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch("/productos", {
+        method: "GET",
+      });
 
       const data = await response.json();
 
@@ -109,17 +101,9 @@ const ProductList = () => {
     if (!confirmacion) return;
 
     try {
-      const response = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/productos/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch(`/admin/productos/${id}`, {
+        method: "DELETE",
+      });
 
       const data = await response.json();
 

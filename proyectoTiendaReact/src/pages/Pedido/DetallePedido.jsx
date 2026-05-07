@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { authFetch } from "../authFetch";
 
 function DetallePedido() {
   const { id } = useParams();
@@ -31,18 +32,9 @@ function DetallePedido() {
   const fetchDetalle = async () => {
     try {
       setLoading(true);
-
-      const res = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/pedidos/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const res = await authFetch(`/pedidos/${id}`, {
+        method: "GET",
+      });
 
       if (res.status === 401) {
         navigate("/login");

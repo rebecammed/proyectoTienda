@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import UserList from "./UserList";
 import ProductList from "./ProductList";
 import logoEmpresa from "/Tienda_logo.png";
+import { authFetch } from "../authFetch";
 
 const AdminPanel = () => {
   const { usuario, logout } = useAuth();
@@ -66,17 +67,9 @@ const AdminPanel = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/admin/stats",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch("/admin/stats", {
+        method: "GET",
+      });
 
       const data = await response.json();
 

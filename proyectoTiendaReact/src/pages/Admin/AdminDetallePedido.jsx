@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { authFetch } from "../authFetch";
 
 function AdminDetallePedido() {
   const { id } = useParams();
@@ -50,17 +51,9 @@ function AdminDetallePedido() {
     setError("");
 
     try {
-      const res = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const res = await authFetch(`/admin/pedidos/${id}`, {
+        method: "GET",
+      });
 
       const data = await res.json();
 
@@ -87,18 +80,10 @@ function AdminDetallePedido() {
 
     setActualizando(true);
     try {
-      const res = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${id}/estado`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ estado: estadoSeleccionado }),
-        },
-      );
+      const res = await authFetch(`/admin/pedidos/${id}/estado`, {
+        method: "PUT",
+        body: JSON.stringify({ estado: estadoSeleccionado }),
+      });
 
       const data = await res.json();
 

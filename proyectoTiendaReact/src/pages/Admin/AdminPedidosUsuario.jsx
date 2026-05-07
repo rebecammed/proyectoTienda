@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-
+import { authFetch } from "../authFetch";
 function AdminPedidosUsuario() {
   const { id } = useParams();
   const [pedidos, setPedidos] = useState([]);
@@ -38,34 +38,20 @@ function AdminPedidosUsuario() {
     setError("");
 
     try {
-      const resUsuario = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const resUsuario = await authFetch(`/admin/usuarios/${id}`, {
+        method: "GET",
+      });
+
       const dataUsuario = await resUsuario.json();
 
       if (dataUsuario.success) {
         setUsuario(dataUsuario.usuario);
       }
 
-      const resPedidos = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/usuario/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const resPedidos = await authFetch(`/admin/pedidos/usuario/${id}`, {
+        method: "GET",
+      });
+
       const data = await resPedidos.json();
 
       if (data.success) {

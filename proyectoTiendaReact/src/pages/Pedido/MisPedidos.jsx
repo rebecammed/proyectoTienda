@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { authFetch } from "../authFetch";
 function MisPedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,16 +23,10 @@ function MisPedidos() {
 
   const fetchPedidos = async () => {
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/pedidos",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const res = await authFetch("/pedidos", {
+        method: "GET",
+      });
+
       const data = await res.json();
       if (data.success) {
         setPedidos(data.pedidos);

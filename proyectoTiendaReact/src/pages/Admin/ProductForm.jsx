@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
+import { authFetch } from "../authFetch";
 const ProductForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -62,17 +62,9 @@ const ProductForm = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/productos/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch(`/productos/${id}`, {
+        method: "GET",
+      });
 
       const data = await response.json();
 
@@ -144,13 +136,8 @@ const ProductForm = () => {
         : "https://proyectotienda-m8um.onrender.com/api/admin/productos";
 
       const method = esEdicion ? "PUT" : "POST";
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method: method,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           nombre: formData.nombre,
           descripcion: formData.descripcion,
@@ -160,7 +147,6 @@ const ProductForm = () => {
           iva: parseInt(formData.iva),
           url_imagenes: formData.url_imagenes || null,
         }),
-        credentials: "include",
       });
 
       const data = await response.json();

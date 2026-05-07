@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import logoEmpresa from "/Tienda_logo.png";
-
+import { authFetch } from "../authFetch";
 export default function Perfil() {
   const [usuario, setUsuario] = useState({
     nombre: "",
@@ -111,17 +111,10 @@ export default function Perfil() {
   };
 
   const fetchUsuario = async () => {
-    const res = await fetch(
-      "https://proyectotienda-m8um.onrender.com/api/perfil",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      },
-    );
+    const res = await authFetch("/perfil", {
+      method: "GET",
+    });
+
     const data = await res.json();
     console.log(data);
     if (data.success) {
@@ -131,17 +124,10 @@ export default function Perfil() {
   };
 
   const fetchDirecciones = async () => {
-    const res = await fetch(
-      "https://proyectotienda-m8um.onrender.com/api/direcciones",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      },
-    );
+    const res = await authFetch("/direcciones", {
+      method: "GET",
+    });
+
     const data = await res.json();
     if (data.success) {
       setDirecciones(data.direcciones);
@@ -162,21 +148,14 @@ export default function Perfil() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    const res = await fetch(
-      "https://proyectotienda-m8um.onrender.com/api/perfil",
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre: usuario.nombre,
-          email: usuario.email,
-        }),
-        credentials: "include",
-      },
-    );
+    const res = await authFetch("/perfil", {
+      method: "PUT",
+      body: JSON.stringify({
+        nombre: usuario.nombre,
+        email: usuario.email,
+      }),
+    });
+
     const data = await res.json();
     if (data.success) {
       setMensaje(data.mensaje);
@@ -202,22 +181,13 @@ export default function Perfil() {
       setError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
-
-    const res = await fetch(
-      "https://proyectotienda-m8um.onrender.com/api/cambiar-password",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          password_actual: passwordData.password_actual,
-          password_nueva: passwordData.password_nueva,
-        }),
-      },
-    );
+    const res = await authFetch("/cambiar-password", {
+      method: "POST",
+      body: JSON.stringify({
+        password_actual: passwordData.password_actual,
+        password_nueva: passwordData.password_nueva,
+      }),
+    });
 
     const data = await res.json();
     if (data.success) {
@@ -263,14 +233,8 @@ export default function Perfil() {
 
     const url = "https://proyectotienda-m8um.onrender.com/api/direcciones";
     const method = direccionEditando ? "PUT" : "POST";
-
-    const res = await fetch(url, {
+    const res = await authFetch(url, {
       method: method,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
       body: JSON.stringify(nuevaDireccion),
     });
 
@@ -295,14 +259,9 @@ export default function Perfil() {
 
   const eliminarDireccion = async (id) => {
     if (!confirm("¿Estás seguro de eliminar esta dirección?")) return;
-
-    const res = await fetch(
-      `https://proyectotienda-m8um.onrender.com/api/direcciones/${id}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      },
-    );
+    const res = await authFetch("/direcciones/${id}", {
+      method: "DELETE",
+    });
 
     const data = await res.json();
     if (data.success) {
@@ -332,13 +291,9 @@ export default function Perfil() {
     if (!confirmar) return;
 
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/perfil",
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
+      const res = await authFetch("/perfil", {
+        method: "DELETE",
+      });
 
       const data = await res.json();
 

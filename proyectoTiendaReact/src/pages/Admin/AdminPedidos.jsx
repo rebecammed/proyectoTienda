@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-
+import { authFetch } from "../authFetch";
 const AdminPedidos = () => {
   const [pedidos, setPedidos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -70,17 +70,9 @@ const AdminPedidos = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/admin/pedidos",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch("/admin/pedidos", {
+        method: "GET",
+      });
 
       const data = await response.json();
 
@@ -99,17 +91,9 @@ const AdminPedidos = () => {
 
   const cargarUsuarios = async () => {
     try {
-      const response = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/admin/usuarios",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch("/admin/usuarios", {
+        method: "GET",
+      });
 
       const data = await response.json();
 
@@ -129,18 +113,10 @@ const AdminPedidos = () => {
     if (!confirmacion) return;
 
     try {
-      const response = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${pedidoId}/estado`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ estado: nuevoEstado }),
-          credentials: "include",
-        },
-      );
+      const response = await authFetch(`/admin/pedidos/${pedidoId}/estado`, {
+        method: "PUT",
+        body: JSON.stringify({ estado: nuevoEstado }),
+      });
 
       if (response.status === 401) {
         alert("Sesion expirada. Por favor, inicia sesion nuevamente.");

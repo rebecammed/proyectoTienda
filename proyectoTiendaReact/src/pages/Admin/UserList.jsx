@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-
+import { authFetch } from "../authFetch";
 const UserList = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -63,17 +63,9 @@ const UserList = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/admin/usuarios",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch("/admin/usuarios", {
+        method: "GET",
+      });
 
       const data = await response.json();
 
@@ -101,18 +93,10 @@ const UserList = () => {
     }
 
     try {
-      const response = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}/estado`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ activo: nuevoEstado }),
-          credentials: "include",
-        },
-      );
+      const response = await authFetch(`/admin/usuarios/${id}/estado`, {
+        method: "PUT",
+        body: JSON.stringify({ activo: nuevoEstado }),
+      });
 
       const data = await response.json();
 
@@ -144,17 +128,9 @@ const UserList = () => {
     if (!confirmacion) return;
 
     try {
-      const response = await fetch(
-        `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}/eliminar`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        },
-      );
+      const response = await authFetch(`/admin/usuarios/${id}/eliminar`, {
+        method: "DELETE",
+      });
 
       const data = await response.json();
 
