@@ -7,6 +7,8 @@ import fotoBolsos from "/bolso.png";
 import fotoPendientes from "/pendientes.jpg";
 import fotoCharms from "/charm.jpg";
 
+import { authFetch } from "../context/authFetch";
+
 function DetalleProducto() {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
