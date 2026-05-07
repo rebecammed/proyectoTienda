@@ -101,6 +101,7 @@ return [
     |
     */
 
+
     'ttl' => env('JWT_TTL', 60),
 
     /*
@@ -122,6 +123,8 @@ return [
 
     'refresh_ttl' => env('JWT_REFRESH_TTL', 20160),
 
+    'blacklist_ttl' => env('JWT_BLACKLIST_TTL', 60),
+    'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', false),
     /*
     |--------------------------------------------------------------------------
     | JWT hashing algorithm
