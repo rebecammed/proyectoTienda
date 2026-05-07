@@ -2,149 +2,119 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-class Carrito
+class Carrito extends Model
 {
-    private $productos = [];
+    protected $table = 'carrito';
+    public $timestamps = false;
 
-    public function __construct()
+    protected $fillable = [
+        'ID_usuario',
+        'ID_producto',
+        'Cantidad'
+    ];
+
+    // Obtener todo el carrito de un usuario
+    public static function getByUser($userId)
     {
-        // Asegurar que la sesión está iniciada
-        if (!session()->isStarted()) {
-            session()->start();
-        }
-
-        $this->productos = session()->get('carrito_productos', []);
+        return DB::table('carrito as c')
+            ->join('productos as p', 'c.ID_producto', '=', 'p.ID_producto')
+            ->select(
+                'c.ID_producto as id',
+                'p.Nombre as nombre',
+                'p.Descripcion_producto as descripcion',
+                'c.Cantidad as cantidad',
+                'p.Precio as precio_base',
+                'p.IVA as iva_porcentaje',
+                'p.Stock as stock'
+            )
+            ->where('c.ID_usuario', $userId)
+            ->get()
+            ->toArray();
     }
 
-    public function getCarrito()
+    // Añadir producto al carrito
+    public static function addProducto($userId, $productoId, $cantidad = 1)
     {
-        return $this->productos;
+        $existing = DB::table('carrito')
+            ->where('ID_usuario', $userId)
+            ->where('ID_producto', $productoId)
+            ->first();
+
+        if ($existing) {
+            DB::table('carrito')
+                ->where('ID_usuario', $userId)
+                ->where('ID_producto', $productoId)
+                ->update(['Cantidad' => $existing->Cantidad + $cantidad]);
+        } else {
+            DB::table('carrito')->insert([
+                'ID_usuario' => $userId,
+                'ID_producto' => $productoId,
+                'Cantidad' => $cantidad
+            ]);
+        }
     }
 
-    public function addProd($p)
+    // Eliminar un producto del carrito (una unidad)
+    public static function removeProducto($userId, $productoId)
     {
-        if (!$p) {
-            throw new \Exception("Producto inválido: es null");
-        }
-        Log::info('addProd - Producto recibido:', ['id' => $p->getId(), 'nombre' => $p->getNombre()]);
+        $existing = DB::table('carrito')
+            ->where('ID_usuario', $userId)
+            ->where('ID_producto', $productoId)
+            ->first();
 
-        if (is_array($p)) {
-            throw new \Exception("Producto es un array, debería ser un objeto Producto");
-        }
-
-        if (!method_exists($p, 'getIva')) {
-            throw new \Exception("El objeto no tiene método getIva. Clase: " . get_class($p));
-        }
-
-        $iva = $p->getIva();
-        if ($iva === null) {
-            Log::warning('IVA es null para producto ID: ' . $p->getId());
-            $iva = 21;
-        }
-
-        $stockMaximo = $p->getStock();
-        $encontrado = false;
-
-        for ($i = 0; $i < count($this->productos); $i++) {
-            if ($this->productos[$i]['id'] == $p->getId()) {
-                $encontrado = true;
-                if ($this->productos[$i]['cantidad'] < $stockMaximo) {
-                    $this->productos[$i]['cantidad'] += 1;
-                } else {
-                    throw new \Exception("No hay suficiente stock. Stock disponible: {$stockMaximo}");
-                }
-                break;
-            }
-        }
-
-        if (!$encontrado) {
-            if ($stockMaximo >= 1) {
-                $this->productos[] = [
-                    'id' => $p->getId(),
-                    'nombre' => $p->getNombre(),
-                    'desc' => $p->getDesc(),
-                    'precio' => $p->getPrecio(),
-                    'iva' => $p->getIva(),
-                    'cantidad' => 1,
-                    'stock' => $stockMaximo
-                ];
+        if ($existing) {
+            if ($existing->Cantidad > 1) {
+                DB::table('carrito')
+                    ->where('ID_usuario', $userId)
+                    ->where('ID_producto', $productoId)
+                    ->update(['Cantidad' => $existing->Cantidad - 1]);
             } else {
-                throw new \Exception("Producto sin stock disponible");
+                DB::table('carrito')
+                    ->where('ID_usuario', $userId)
+                    ->where('ID_producto', $productoId)
+                    ->delete();
             }
         }
-
-        session()->put('carrito_productos', $this->productos);
-        Log::info('addProd - Productos después de añadir:', $this->productos);
     }
 
-    public function delProd($id)
+    // Vaciar carrito
+    public static function clear($userId)
     {
-        for ($i = 0; $i < count($this->productos); $i++) {
-            if ($this->productos[$i]['id'] == $id) {
-                if ($this->productos[$i]['cantidad'] > 1) {
-                    $this->productos[$i]['cantidad'] -= 1;
-                } else {
-                    unset($this->productos[$i]);
-                    $this->productos = array_values($this->productos);
-                }
-                break;
-            }
+        DB::table('carrito')
+            ->where('ID_usuario', $userId)
+            ->delete();
+    }
+
+    // Calcular precio sin IVA
+    public static function precioSinIva($userId)
+    {
+        return DB::table('carrito as c')
+            ->join('productos as p', 'c.ID_producto', '=', 'p.ID_producto')
+            ->where('c.ID_usuario', $userId)
+            ->sum(DB::raw('c.Cantidad * p.Precio'));
+    }
+
+    // Calcular IVA total
+    public static function ivaTotal($userId)
+    {
+        $items = DB::table('carrito as c')
+            ->join('productos as p', 'c.ID_producto', '=', 'p.ID_producto')
+            ->where('c.ID_usuario', $userId)
+            ->get();
+
+        $total = 0;
+        foreach ($items as $item) {
+            $total += $item->Cantidad * ($item->Precio * ($item->IVA / 100));
         }
-
-        session()->put('carrito_productos', $this->productos);
+        return $total;
     }
 
-    public function precioSinIva()
+    // Calcular precio total con IVA
+    public static function precioTotal($userId)
     {
-        $suma = 0;
-        foreach ($this->productos as $producto) {
-            $cantidad = isset($producto['cantidad']) ? (int)$producto['cantidad'] : 0;
-            $precio = isset($producto['precio']) ? (float)$producto['precio'] : 0;
-            $suma += $cantidad * $precio;
-        }
-        return $suma;
-    }
-
-    public function ivaTotal()
-    {
-        $suma = 0;
-        foreach ($this->productos as $producto) {
-            if (!isset($producto['iva'])) {
-                $producto['iva'] = 21;
-            }
-
-            $cantidad = isset($producto['cantidad']) ? (int)$producto['cantidad'] : 0;
-            $precio = isset($producto['precio']) ? (float)$producto['precio'] : 0;
-            $iva = (float)$producto['iva'];
-
-            $suma += $cantidad * ($precio * ($iva / 100));
-        }
-        return $suma;
-    }
-
-    public function precioTotal()
-    {
-        $suma = 0;
-        foreach ($this->productos as $producto) {
-            if (!isset($producto['iva'])) {
-                $producto['iva'] = 21;
-            }
-
-            $cantidad = isset($producto['cantidad']) ? (int)$producto['cantidad'] : 0;
-            $precio = isset($producto['precio']) ? (float)$producto['precio'] : 0;
-            $iva = (float)$producto['iva'];
-
-            $suma += ($precio * (1 + $iva / 100)) * $cantidad;
-        }
-        return $suma;
-    }
-
-    public function vaciar()
-    {
-        $this->productos = [];
-        session()->forget('carrito_productos');
+        return self::precioSinIva($userId) + self::ivaTotal($userId);
     }
 }

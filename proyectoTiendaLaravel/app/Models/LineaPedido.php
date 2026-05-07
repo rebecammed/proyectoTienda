@@ -33,6 +33,22 @@ class LineaPedido extends Model
 
         return true;
     }
+    public static function crearLineasDesdeCarrito($pedidoId, $productosCarrito)
+    {
+        foreach ($productosCarrito as $item) {
+            DB::table('lineas_pedido')->insert([
+                'ID_pedido' => $pedidoId,
+                'ID_producto' => $item->id,
+                'Cantidad' => $item->cantidad
+            ]);
+
+            DB::table('productos')
+                ->where('ID_producto', $item->id)
+                ->decrement('Stock', $item->cantidad);
+        }
+
+        return true;
+    }
 
     public static function getByPedido($pedidoId)
     {

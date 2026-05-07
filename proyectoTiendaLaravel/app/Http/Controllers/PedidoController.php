@@ -51,23 +51,8 @@ class PedidoController extends Controller
             ], 400);
         }
 
-        // Obtener carrito de la sesión
-        if (!session()->has('carrito')) {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'El carrito está vacío'
-            ], 400);
-        }
-
-        $carrito = session()->get('carrito');
-        if (!($carrito instanceof Carrito)) {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'Error con el carrito'
-            ], 500);
-        }
-
-        $productosCarrito = $carrito->getCarrito();
+        // Obtener carrito de la BD
+        $productosCarrito = Carrito::getByUser($userId);
 
         if (empty($productosCarrito)) {
             return response()->json([
@@ -78,29 +63,28 @@ class PedidoController extends Controller
 
         // Verificar stock disponible
         foreach ($productosCarrito as $item) {
-            $producto = Producto::getById($item['id']);
-            if (!$producto || $producto->getStock() < $item['cantidad']) {
+            $producto = Producto::getById($item->id);
+            if (!$producto || $producto->getStock() < $item->cantidad) {
                 return response()->json([
                     'success' => false,
-                    'mensaje' => "Stock insuficiente para {$item['nombre']}"
+                    'mensaje' => "Stock insuficiente para {$item->nombre}"
                 ], 400);
             }
         }
 
-        // Calcular totales usando el objeto carrito
-        $subtotal = $carrito->precioSinIva();
-        $importeIVA = $carrito->ivaTotal();
-        $importeTotal = $carrito->precioTotal();
+        // Calcular totales
+        $subtotal = Carrito::precioSinIva($userId);
+        $importeIVA = Carrito::ivaTotal($userId);
+        $importeTotal = Carrito::precioTotal($userId);
 
         // Crear pedido
         $pedidoId = Pedido::crearPedido($userId, $direccionId, $importeTotal, $importeIVA);
 
         // Crear líneas de pedido y actualizar stock
-        LineaPedido::crearLineas($pedidoId, $productosCarrito);
+        LineaPedido::crearLineasDesdeCarrito($pedidoId, $productosCarrito);
 
         // Vaciar carrito
-        $carrito->vaciar();
-        session()->put('carrito', $carrito);
+        Carrito::clear($userId);
 
         return response()->json([
             'success' => true,

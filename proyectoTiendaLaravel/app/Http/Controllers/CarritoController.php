@@ -6,26 +6,9 @@ use App\Models\Carrito;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Log;
 
 class CarritoController extends Controller
 {
-    private function initSession()
-    {
-        $userId = $this->getUserId();
-        if ($userId) {
-            // Usar el ID del usuario como parte del identificador de sesión
-            $sessionId = 'user_' . $userId;
-            session()->setId($sessionId);
-            if (!session()->isStarted()) {
-                session()->start();
-            }
-        } else {
-            if (!session()->isStarted()) {
-                session()->start();
-            }
-        }
-    }
     private function getUserId()
     {
         try {
@@ -38,134 +21,92 @@ class CarritoController extends Controller
 
     public function getCarrito()
     {
-
-        $this->initSession();
-        // ... resto del código
-
-        // Asegurar que el carrito existe en sesión
-        if (!session()->has('carrito')) {
-            session()->put('carrito', new Carrito());
+        $userId = $this->getUserId();
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No autenticado'
+            ], 401);
         }
 
-        $carrito = session()->get('carrito');
-        $productos = $carrito->getCarrito();
-        Log::info('Session ID: ' . session()->getId());
-        Log::info('Contenido de carrito en sesión: ', session()->get('carrito')?->getCarrito() ?? 'null');
-        // Preparar los productos con precios calculados
-        $productosConPrecios = [];
-        foreach ($productos as $producto) {
-            $precioBase = isset($producto['precio']) ? (float)$producto['precio'] : 0;
-            $iva = isset($producto['iva']) ? (float)$producto['iva'] : 21;
-            $cantidad = isset($producto['cantidad']) ? (int)$producto['cantidad'] : 0;
+        $productos = Carrito::getByUser($userId);
 
-            $precioConIva = $precioBase * (1 + $iva / 100);
-            $totalProducto = $precioConIva * $cantidad;
-
-            $productosConPrecios[] = [
-                'id' => $producto['id'],
-                'nombre' => $producto['nombre'],
-                'descripcion' => $producto['desc'] ?? '',
-                'cantidad' => $cantidad,
-                'precio_base' => $precioBase,
-                'iva_porcentaje' => $iva,
+        // Calcular precios con IVA para cada producto
+        $productosConIva = [];
+        foreach ($productos as $item) {
+            $precioConIva = $item->precio_base * (1 + $item->iva_porcentaje / 100);
+            $productosConIva[] = [
+                'id' => $item->id,
+                'nombre' => $item->nombre,
+                'descripcion' => $item->descripcion,
+                'cantidad' => $item->cantidad,
+                'precio_base' => $item->precio_base,
+                'iva_porcentaje' => $item->iva_porcentaje,
                 'precio_con_iva' => round($precioConIva, 2),
-                'total_producto' => round($totalProducto, 2),
-                'stock' => $producto['stock'] ?? 0
+                'total_producto' => round($precioConIva * $item->cantidad, 2),
+                'stock' => $item->stock
             ];
         }
 
         return response()->json([
             'success' => true,
-            'carrito' => $productosConPrecios,
-            'precioSinIva' => round($carrito->precioSinIva(), 2),
-            'ivaTotal' => round($carrito->ivaTotal(), 2),
-            'precioTotal' => round($carrito->precioTotal(), 2)
+            'carrito' => $productosConIva,
+            'precioSinIva' => round(Carrito::precioSinIva($userId), 2),
+            'ivaTotal' => round(Carrito::ivaTotal($userId), 2),
+            'precioTotal' => round(Carrito::precioTotal($userId), 2)
         ]);
     }
 
     public function addProducto(Request $request)
     {
-        $this->initSession();
-
-        try {
-            $request->validate([
-                'id' => 'required|integer|exists:productos,ID_producto'
-            ]);
-
-            // Verificar autenticación con JWT
-            $userId = $this->getUserId();
-            if (!$userId) {
-                return response()->json([
-                    'success' => false,
-                    'mensaje' => 'Debes iniciar sesión'
-                ], 401);
-            }
-
-            // Inicializar carrito si no existe
-            if (!session()->has('carrito')) {
-                $carrito = new Carrito();
-                session()->put('carrito', $carrito);
-            } else {
-                $carrito = session()->get('carrito');
-                if (!($carrito instanceof Carrito)) {
-                    $carrito = new Carrito();
-                    session()->put('carrito', $carrito);
-                }
-            }
-
-            // Obtener el producto de la base de datos
-            $producto = Producto::getById($request->input('id'));
-            Log::info('Producto encontrado: ', ['id' => $producto->getId(), 'nombre' => $producto->getNombre()]);
-            if (!$producto) {
-                return response()->json([
-                    'success' => false,
-                    'mensaje' => 'Producto no encontrado'
-                ], 404);
-            }
-
-            $carrito = session()->get('carrito');
-            Log::info('Carrito ANTES de addProd: ', $carrito->getCarrito());
-            try {
-                $carrito->addProd($producto);
-                Log::info('Carrito DESPUÉS de addProd: ', $carrito->getCarrito());
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'mensaje' => $e->getMessage()
-                ], 400);
-            }
-
-            session()->put('carrito', $carrito);
-
-            return response()->json([
-                'success' => true,
-                'mensaje' => 'Producto añadido al carrito'
-            ]);
-        } catch (\Exception $e) {
+        $userId = $this->getUserId();
+        if (!$userId) {
             return response()->json([
                 'success' => false,
-                'mensaje' => $e->getMessage()
-            ], 500);
+                'mensaje' => 'Debes iniciar sesión'
+            ], 401);
         }
+
+        $request->validate([
+            'id' => 'required|integer|exists:productos,ID_producto',
+            'cantidad' => 'sometimes|integer|min:1'
+        ]);
+
+        $productoId = $request->input('id');
+        $cantidad = $request->input('cantidad', 1);
+
+        // Verificar stock
+        $producto = Producto::getById($productoId);
+        if (!$producto || $producto->getStock() < $cantidad) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No hay suficiente stock'
+            ], 400);
+        }
+
+        Carrito::addProducto($userId, $productoId, $cantidad);
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Producto añadido al carrito'
+        ]);
     }
 
     public function quitarProducto(Request $request)
     {
+        $userId = $this->getUserId();
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No autenticado'
+            ], 401);
+        }
+
         $request->validate([
             'id' => 'required|integer'
         ]);
 
-        if (!session()->has('carrito')) {
-            return response()->json([
-                'success' => true,
-                'carrito' => [],
-                'total' => 0
-            ]);
-        }
-
-        $carrito = session()->get('carrito');
-        $carrito->delProd($request->input('id'));
-        session()->put('carrito', $carrito);
+        Carrito::removeProducto($userId, $request->input('id'));
 
         return response()->json([
             'success' => true,
@@ -175,11 +116,15 @@ class CarritoController extends Controller
 
     public function clearCarrito()
     {
-        if (session()->has('carrito')) {
-            $carrito = session()->get('carrito');
-            $carrito->vaciar();
-            session()->put('carrito', $carrito);
+        $userId = $this->getUserId();
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No autenticado'
+            ], 401);
         }
+
+        Carrito::clear($userId);
 
         return response()->json([
             'success' => true,
