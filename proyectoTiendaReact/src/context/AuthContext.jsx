@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+const API_URL = "https://proyectotienda-m8um.onrender.com/api";
 
 const AuthContext = createContext();
 
@@ -62,11 +63,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("rol");
     setUsuario(null);
     setRol(null);
     setIsLoggedIn(false);
-    localStorage.removeItem("usuario");
-    localStorage.removeItem("rol");
   };
 
   return (
