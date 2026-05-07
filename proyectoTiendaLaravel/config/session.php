@@ -158,7 +158,7 @@ return [
 
     'domain' => '.onrender.com',  // ← Con el punto al inicio
     'secure' => true,
-    'same_site' => 'none',
+    'same_site' => 'lax',
 
     /*
     |--------------------------------------------------------------------------
