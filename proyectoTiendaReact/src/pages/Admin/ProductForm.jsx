@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { authFetch } from "../authFetch";
+import { authFetch } from "../../context/authFetch";
 const ProductForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();

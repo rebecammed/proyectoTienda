@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { authFetch } from "../authFetch";
+import { authFetch } from "../../context/authFetch";
 function AdminPedidosUsuario() {
   const { id } = useParams();
   const [pedidos, setPedidos] = useState([]);

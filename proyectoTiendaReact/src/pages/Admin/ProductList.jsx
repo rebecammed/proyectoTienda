@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { authFetch } from "../authFetch";
+import { authFetch } from "../../context/authFetch";
 const ProductList = () => {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);

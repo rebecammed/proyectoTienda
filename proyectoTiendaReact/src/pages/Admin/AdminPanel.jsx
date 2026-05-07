@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import UserList from "./UserList";
 import ProductList from "./ProductList";
 import logoEmpresa from "/Tienda_logo.png";
-import { authFetch } from "../authFetch";
+import { authFetch } from "../../context/authFetch";
 
 const AdminPanel = () => {
   const { usuario, logout } = useAuth();

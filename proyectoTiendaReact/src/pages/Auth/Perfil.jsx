@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import logoEmpresa from "/Tienda_logo.png";
-import { authFetch } from "../authFetch";
+import { authFetch } from "../../context/authFetch";
 export default function Perfil() {
   const [usuario, setUsuario] = useState({
     nombre: "",
