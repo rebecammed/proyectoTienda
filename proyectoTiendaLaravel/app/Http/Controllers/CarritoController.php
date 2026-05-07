@@ -6,9 +6,16 @@ use App\Models\Carrito;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Log;
 
 class CarritoController extends Controller
 {
+    public function __construct()
+    {
+        if (!session()->isStarted()) {
+            session()->start();
+        }
+    }
     private function getUserId()
     {
         try {
@@ -28,7 +35,8 @@ class CarritoController extends Controller
 
         $carrito = session()->get('carrito');
         $productos = $carrito->getCarrito();
-
+        Log::info('Session ID: ' . session()->getId());
+        Log::info('Contenido de carrito en sesión: ', session()->get('carrito')?->getCarrito() ?? 'null');
         // Preparar los productos con precios calculados
         $productosConPrecios = [];
         foreach ($productos as $producto) {
@@ -100,6 +108,7 @@ class CarritoController extends Controller
             }
 
             $carrito = session()->get('carrito');
+            Log::info('Carrito después de añadir: ', $carrito->getCarrito());
             try {
                 $carrito->addProd($producto);
             } catch (\Exception $e) {

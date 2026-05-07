@@ -231,8 +231,13 @@ export default function Perfil() {
     e.preventDefault();
     setError("");
 
+    // Si es edición, incluir el ID en la URL
+    const url = direccionEditando
+      ? `/direcciones/${direccionEditando.id}`
+      : "/direcciones";
+
     const method = direccionEditando ? "PUT" : "POST";
-    const res = await authFetch("/direcciones", {
+    const res = await authFetch("url", {
       method: method,
       body: JSON.stringify(nuevaDireccion),
     });
