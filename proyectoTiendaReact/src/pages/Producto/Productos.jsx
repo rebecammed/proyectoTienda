@@ -124,15 +124,11 @@ function Productos() {
     }
 
     try {
-      const res = await fetch(
-        "https://proyectotienda-m8um.onrender.com/api/carrito/add",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: producto.id }),
-        },
-      );
+      const res = await authFetch("/carrito/add", {
+        method: "POST",
+        body: JSON.stringify({ id: producto.id }),
+      });
+
       const data = await res.json();
 
       if (data.success !== false) {

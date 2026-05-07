@@ -203,7 +203,7 @@ class AuthController extends Controller
             ]);
 
         // Enlace de recuperación (para desarrollo, lo devolvemos en la respuesta)
-        $resetLink = "http://localhost:5173/reset-password?token={$token}&email=" . urlencode($email);
+        $resetLink = "https://proyecto-tienda-sigma.vercel.app/reset-password?token={$token}&email=" . urlencode($email);
 
         return response()->json([
             'success' => true,
