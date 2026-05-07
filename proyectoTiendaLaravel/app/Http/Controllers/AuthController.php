@@ -8,22 +8,35 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        Log::info('Login intentado', $request->only('usuario'));
+
         $credentials = $request->only('usuario', 'contrasena');
 
         // Buscar usuario por email
         $user = Usuario::where('Email', $credentials['usuario'])->first();
 
+        Log::info('Usuario encontrado?', ['exists' => !is_null($user)]);
+
         if (!$user || !Hash::check($credentials['contrasena'], $user->Password_hash)) {
+            Log::error('Login fallido', [
+                'email' => $credentials['usuario'],
+                'user_exists' => !is_null($user),
+                'password_check' => $user ? Hash::check($credentials['contrasena'], $user->Password_hash) : false
+            ]);
+
             return response()->json([
                 'success' => false,
                 'mensaje' => 'Usuario o contraseña incorrectos'
             ], 401);
         }
+
+        Log::info('Usuario autenticado', ['id' => $user->ID_usuario, 'nombre' => $user->Nombre_completo]);
 
         // Generar token JWT
         $token = JWTAuth::fromUser($user);
