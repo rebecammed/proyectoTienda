@@ -41,10 +41,7 @@ function MisPedidos() {
   const getEstadoTexto = (estado) => {
     const estados = {
       pendiente: "Pendiente",
-      confirmado: "Confirmado",
       enviado: "Enviado",
-      entregado: "Entregado",
-      cancelado: "Cancelado",
     };
     return estados[estado] || estado;
   };

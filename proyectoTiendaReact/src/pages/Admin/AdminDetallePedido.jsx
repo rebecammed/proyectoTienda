@@ -116,10 +116,7 @@ function AdminDetallePedido() {
 
   const estadosDisponibles = [
     { value: "PENDIENTE", label: "Pendiente" },
-    { value: "CONFIRMADO", label: "Confirmado" },
     { value: "ENVIADO", label: "Enviado" },
-    { value: "ENTREGADO", label: "Entregado" },
-    { value: "CANCELADO", label: "Cancelado" },
   ];
 
   if (loading) {

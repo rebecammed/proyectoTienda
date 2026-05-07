@@ -144,10 +144,7 @@ const AdminPedidos = () => {
   const getEstadoColor = (estado) => {
     const colores = {
       PENDIENTE: { bg: "#7C6406", text: "white" },
-      CONFIRMADO: { bg: "#DFD777", text: "#3D0026" },
       ENVIADO: { bg: "#3D0026", text: "white" },
-      ENTREGADO: { bg: "#DFD777", text: "#3D0026" },
-      CANCELADO: { bg: "#9C7C77", text: "white" },
     };
     return colores[estado] || { bg: "#9C7C77", text: "white" };
   };
@@ -189,14 +186,7 @@ const AdminPedidos = () => {
     return cumpleFiltro;
   });
 
-  const estadosDisponibles = [
-    "TODOS",
-    "PENDIENTE",
-    "CONFIRMADO",
-    "ENVIADO",
-    "ENTREGADO",
-    "CANCELADO",
-  ];
+  const estadosDisponibles = ["TODOS", "PENDIENTE", "ENVIADO"];
 
   if (cargando) {
     return (
