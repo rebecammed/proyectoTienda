@@ -709,10 +709,7 @@ const AdminPedidos = () => {
                           }}
                         >
                           <option value="PENDIENTE">Pendiente</option>
-                          <option value="CONFIRMADO">Confirmado</option>
                           <option value="ENVIADO">Enviado</option>
-                          <option value="ENTREGADO">Entregado</option>
-                          <option value="CANCELADO">Cancelado</option>
                         </select>
                       </td>
                       <td style={{ padding: "10px", textAlign: "center" }}>
