@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ProductCard from "./ProductCard";
 
-import { authFetch } from "../context/authFetch";
+import { authFetch } from "../../context/authFetch";
 // Importa tu logo
 import logoEmpresa from "/Tienda_logo.png";
 
