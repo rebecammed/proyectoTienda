@@ -36,7 +36,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Dirección
     Route::get('/direcciones', [DireccionController::class, 'getByUser']);
-    Route::put('/direcciones', [DireccionController::class, 'actualizarDireccion']);
+    Route::put('/direcciones/{id}', [DireccionController::class, 'actualizarDireccion']);
     Route::post('/direcciones', [DireccionController::class, 'crearDireccion']);
     Route::delete('/direcciones/{id}', [DireccionController::class, 'eliminarDireccion']);
 

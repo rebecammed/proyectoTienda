@@ -10,10 +10,20 @@ use Illuminate\Support\Facades\Log;
 
 class CarritoController extends Controller
 {
-    public function __construct()
+    private function initSession()
     {
-        if (!session()->isStarted()) {
-            session()->start();
+        $userId = $this->getUserId();
+        if ($userId) {
+            // Usar el ID del usuario como parte del identificador de sesión
+            $sessionId = 'user_' . $userId;
+            session()->setId($sessionId);
+            if (!session()->isStarted()) {
+                session()->start();
+            }
+        } else {
+            if (!session()->isStarted()) {
+                session()->start();
+            }
         }
     }
     private function getUserId()
@@ -28,6 +38,10 @@ class CarritoController extends Controller
 
     public function getCarrito()
     {
+
+        $this->initSession();
+        // ... resto del código
+
         // Asegurar que el carrito existe en sesión
         if (!session()->has('carrito')) {
             session()->put('carrito', new Carrito());
@@ -71,6 +85,8 @@ class CarritoController extends Controller
 
     public function addProducto(Request $request)
     {
+        $this->initSession();
+
         try {
             $request->validate([
                 'id' => 'required|integer|exists:productos,ID_producto'
