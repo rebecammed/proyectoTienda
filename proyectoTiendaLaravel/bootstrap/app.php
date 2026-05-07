@@ -16,20 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // CORS para rutas API
         $middleware->append(HandleCors::class);
-        // Asegurar que las sesiones funcionan en las rutas API
-        $middleware->api(append: [
-            \Illuminate\Session\Middleware\StartSession::class,
-        ]);
-        // Trust hosts
-        $middleware->trustHosts(at: ['localhost:8000', 'localhost:5173']);
+
 
         // Middleware personalizados (alias)
         $middleware->alias([
+            'jwt' => \App\Http\Middleware\JwtMiddleware::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
-
-        // Middleware global (se ejecuta en todas las peticiones)
-        $middleware->append(\App\Http\Middleware\Cors::class);
     })
 
     ->withExceptions(function (Exceptions $exceptions): void {
