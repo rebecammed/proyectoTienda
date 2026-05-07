@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Usuario extends Model
+class Usuario extends Model implements JWTSubject
 {
     protected $table = 'usuarios';
     protected $primaryKey = 'ID_usuario';
@@ -45,7 +46,15 @@ class Usuario extends Model
             $this->activo = $attributes['Activo'] ?? null;
         }
     }
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
     public function getId()
     {
         return $this->id;
