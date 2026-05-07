@@ -8,7 +8,6 @@ use App\Models\Direccion;
 use App\Models\Carrito;
 use App\Models\Producto;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PedidoController extends Controller
@@ -52,8 +51,23 @@ class PedidoController extends Controller
             ], 400);
         }
 
-        // Obtener carrito
-        $productosCarrito = Carrito::getByUser($userId);
+        // Obtener carrito de la sesión
+        if (!session()->has('carrito')) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'El carrito está vacío'
+            ], 400);
+        }
+
+        $carrito = session()->get('carrito');
+        if (!($carrito instanceof Carrito)) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'Error con el carrito'
+            ], 500);
+        }
+
+        $productosCarrito = $carrito->getCarrito();
 
         if (empty($productosCarrito)) {
             return response()->json([
@@ -65,7 +79,7 @@ class PedidoController extends Controller
         // Verificar stock disponible
         foreach ($productosCarrito as $item) {
             $producto = Producto::getById($item['id']);
-            if (!$producto || $producto->Stock < $item['cantidad']) {
+            if (!$producto || $producto->getStock() < $item['cantidad']) {
                 return response()->json([
                     'success' => false,
                     'mensaje' => "Stock insuficiente para {$item['nombre']}"
@@ -73,10 +87,10 @@ class PedidoController extends Controller
             }
         }
 
-        // Calcular totales (usando métodos del modelo Carrito)
-        $subtotal = Carrito::precioSinIva($userId);
-        $importeIVA = Carrito::ivaTotal($userId);
-        $importeTotal = Carrito::precioTotal($userId);
+        // Calcular totales usando el objeto carrito
+        $subtotal = $carrito->precioSinIva();
+        $importeIVA = $carrito->ivaTotal();
+        $importeTotal = $carrito->precioTotal();
 
         // Crear pedido
         $pedidoId = Pedido::crearPedido($userId, $direccionId, $importeTotal, $importeIVA);
@@ -85,7 +99,8 @@ class PedidoController extends Controller
         LineaPedido::crearLineas($pedidoId, $productosCarrito);
 
         // Vaciar carrito
-        Carrito::clear($userId);
+        $carrito->vaciar();
+        session()->put('carrito', $carrito);
 
         return response()->json([
             'success' => true,
