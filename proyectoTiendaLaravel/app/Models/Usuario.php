@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Usuario extends Model implements JWTSubject
+class Usuario extends Authenticatable implements JWTSubject
 {
     protected $table = 'usuarios';
     protected $primaryKey = 'ID_usuario';
@@ -46,6 +46,8 @@ class Usuario extends Model implements JWTSubject
             $this->activo = $attributes['Activo'] ?? null;
         }
     }
+
+    // Métodos requeridos por JWTSubject
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -55,6 +57,24 @@ class Usuario extends Model implements JWTSubject
     {
         return [];
     }
+
+    // Métodos requeridos por Authenticatable
+    public function getAuthIdentifierName()
+    {
+        return 'ID_usuario';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->{$this->getAuthIdentifierName()};
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->Password_hash;
+    }
+
+    // Tus métodos existentes
     public function getId()
     {
         return $this->id;
@@ -75,7 +95,6 @@ class Usuario extends Model implements JWTSubject
         return $this->activo;
     }
 
-
     public function setEmail($email)
     {
         $this->email = $email;
@@ -90,8 +109,6 @@ class Usuario extends Model implements JWTSubject
     {
         $this->activo = false;
     }
-
-
 
     public static function getById($id)
     {
@@ -153,7 +170,6 @@ class Usuario extends Model implements JWTSubject
 
     public static function eliminarCuenta($userId)
     {
-        // Anonimizar datos personales del usuario
         DB::table('usuarios')
             ->where('ID_usuario', $userId)
             ->update([
@@ -166,7 +182,6 @@ class Usuario extends Model implements JWTSubject
                 'Reset_expira' => null,
             ]);
 
-        // Anonimizar direcciones asociadas
         DB::table('direcciones')
             ->where('ID_usuario', $userId)
             ->update([
