@@ -15,19 +15,20 @@ class ProductoController extends Controller
     {
         $productos = Producto::getAll();
         $productosConIva = [];
+
         foreach ($productos as $producto) {
-            $precioConIva = $producto['precio'] * (1 + $producto['iva'] / 100);
+            $precioConIva = $producto->precio * (1 + $producto->iva / 100);
 
             $productosConIva[] = [
-                'id' => $producto['id'],
-                'nombre' => $producto['nombre'],
-                'descripcion' => $producto['descripcion'],
-                'precio' => $producto['precio'],
-                'iva' => $producto['iva'],
-                'precioConIva' => round($precioConIva, 2), // ← AÑADIR ESTO
-                'stock' => $producto['stock'],
-                'categoria' => $producto['categoria'],
-                'url_imagenes' => $producto['url_imagenes']
+                'id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'descripcion' => $producto->descripcion,
+                'precio' => $producto->precio,
+                'iva' => $producto->iva,
+                'precioConIva' => round($precioConIva, 2),
+                'stock' => $producto->stock,
+                'categoria' => $producto->categoria,
+                'url_imagenes' => $producto->url_imagenes
             ];
         }
 
