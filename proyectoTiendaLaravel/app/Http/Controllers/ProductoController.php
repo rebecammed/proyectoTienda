@@ -88,10 +88,7 @@ class ProductoController extends Controller
             ], 404);
         }
 
-        // Actualizar stock usando DB directo o método de actualización
-        \Illuminate\Support\Facades\DB::table('productos')
-            ->where('ID_producto', $id)
-            ->update(['Stock' => $request->stock]);
+        Producto::updateStock($id, $request->stock);
 
         return response()->json([
             'success' => true,

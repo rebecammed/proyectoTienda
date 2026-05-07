@@ -4,50 +4,62 @@ namespace App\Http\Controllers;
 
 use App\Models\Direccion;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class DireccionController extends Controller
 {
+    private function getUserId()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            return $user ? $user->ID_usuario : null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function getByUser()
     {
-        if (!session()->has('usuario_id')) {
+        $userId = $this->getUserId();
+        if (!$userId) {
             return response()->json([
                 'success' => false,
                 'mensaje' => 'No autenticado'
             ], 401);
         }
 
-        $userId = session()->get('usuario_id');
         $direcciones = Direccion::getByUser($userId);
 
-        if (!empty($direcciones)) {
-            $result = [];
-            foreach ($direcciones as $dir) {
-                $result[] = [
-                    'id' => $dir->getId(),
-                    'idUser' => $userId,
-                    'direccion' => $dir->getDireccion(),
-                    'codigoPostal' => $dir->getCp(),
-                    'ciudad' => $dir->getCiudad(),
-                    'provincia' => $dir->getProvincia(),
-                    'facturacion' => $dir->getFacturacion()
-                ];
-            }
-
+        if (empty($direcciones)) {
             return response()->json([
                 'success' => true,
-                'direcciones' => $result
+                'direcciones' => []
             ]);
         }
 
+        $result = [];
+        foreach ($direcciones as $dir) {
+            $result[] = [
+                'id' => $dir->getId(),
+                'idUser' => $userId,
+                'direccion' => $dir->getDireccion(),
+                'codigoPostal' => $dir->getCp(),
+                'ciudad' => $dir->getCiudad(),
+                'provincia' => $dir->getProvincia(),
+                'facturacion' => $dir->getFacturacion()
+            ];
+        }
+
         return response()->json([
-            'success' => false,
-            'mensaje' => 'Dirección no disponible para el usuario indicado'
-        ], 404);
+            'success' => true,
+            'direcciones' => $result
+        ]);
     }
 
     public function actualizarDireccion(Request $request)
     {
-        if (!session()->has('usuario_id')) {
+        $userId = $this->getUserId();
+        if (!$userId) {
             return response()->json([
                 'success' => false,
                 'mensaje' => 'No autenticado'
@@ -63,7 +75,6 @@ class DireccionController extends Controller
             'facturacion' => 'required|boolean'
         ]);
 
-        $userId = session()->get('usuario_id');
         $dirId = $request->input('id');
 
         $direccion = Direccion::getById($dirId, $userId);
@@ -80,7 +91,7 @@ class DireccionController extends Controller
         $direccion->setCiudad($request->input('ciudad'));
         $direccion->setProvincia($request->input('provincia'));
 
-        if ($request->input('facturacion') === true) {
+        if ($request->input('facturacion')) {
             $direccion->setFacturacion();
         } else {
             $direccion->unsetFacturacion();
@@ -101,8 +112,12 @@ class DireccionController extends Controller
 
     public function crearDireccion(Request $request)
     {
-        if (!session()->has('usuario_id')) {
-            return response()->json(['success' => false, 'mensaje' => 'No autenticado'], 401);
+        $userId = $this->getUserId();
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No autenticado'
+            ], 401);
         }
 
         $request->validate([
@@ -113,22 +128,12 @@ class DireccionController extends Controller
             'facturacion' => 'boolean'
         ]);
 
-        $userId = session()->get('usuario_id');
-
-        // Si esta dirección es de facturación, quitar facturación de otras
-        if ($request->input('facturacion')) {
-            \Illuminate\Support\Facades\DB::table('direcciones')
-                ->where('ID_usuario', $userId)
-                ->update(['Facturacion' => false]);
-        }
-
-        $id = \Illuminate\Support\Facades\DB::table('direcciones')->insertGetId([
-            'ID_usuario' => $userId,
-            'Direccion' => $request->input('direccion'),
-            'CP' => $request->input('codigoPostal'),
-            'Ciudad' => $request->input('ciudad'),
-            'Provincia' => $request->input('provincia'),
-            'Facturacion' => $request->input('facturacion', false)
+        $id = Direccion::crear($userId, [
+            'direccion' => $request->input('direccion'),
+            'codigoPostal' => $request->input('codigoPostal'),
+            'ciudad' => $request->input('ciudad'),
+            'provincia' => $request->input('provincia'),
+            'facturacion' => $request->input('facturacion', false)
         ]);
 
         return response()->json([
@@ -140,16 +145,15 @@ class DireccionController extends Controller
 
     public function eliminarDireccion($id)
     {
-        if (!session()->has('usuario_id')) {
-            return response()->json(['success' => false, 'mensaje' => 'No autenticado'], 401);
+        $userId = $this->getUserId();
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No autenticado'
+            ], 401);
         }
 
-        $userId = session()->get('usuario_id');
-
-        $deleted = \Illuminate\Support\Facades\DB::table('direcciones')
-            ->where('ID_direccion', $id)
-            ->where('ID_usuario', $userId)
-            ->delete();
+        $deleted = Direccion::eliminar($id, $userId);
 
         if ($deleted) {
             return response()->json([

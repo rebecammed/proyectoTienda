@@ -8,168 +8,98 @@ use Illuminate\Support\Facades\Log;
 
 class Producto extends Model
 {
-    // Configuración para usar tu tabla existente
     protected $table = 'productos';
     protected $primaryKey = 'ID_producto';
     public $timestamps = false;
 
-    // Propiedades públicas (como en tu clase original)
-    public $nombre;
-    public $descripcion;
-    public $precio;
-    public $iva;
-    public $stock;
-    public $categoria;
-    public $url_imagenes;
+    // Atributos asignables en masa
+    protected $fillable = [
+        'Nombre',
+        'Descripcion_producto',
+        'Precio',
+        'IVA',
+        'Stock',
+        'Categoria',
+        'URL_imagenes'
+    ];
 
-    // Constructor (adaptado a Laravel)
-    public function __construct($id = null, $nombre = null, $descripcion = null, $precio = null, $iva = null, $stock = null, $categoria = null, $url_imagenes = null)
-    {
-        parent::__construct();
-
-        $this->id = $id;
-        $this->nombre = $nombre;
-        $this->descripcion = $descripcion;
-        $this->precio = $precio;
-        $this->iva = $iva !== null ? (float)$iva : 21;
-        $this->stock = $stock;
-        $this->categoria = $categoria;
-        $this->url_imagenes = $url_imagenes;
-    }
-
-    // Getters
+    // Para mantener compatibilidad con getters existentes
     public function getId()
     {
-        return $this->id;
+        return $this->ID_producto;
     }
 
     public function getNombre()
     {
-        return $this->nombre;
+        return $this->Nombre;
     }
 
     public function getDesc()
     {
-        return $this->descripcion;
+        return $this->Descripcion_producto;
     }
 
     public function getPrecio()
     {
-        return $this->precio;
+        return $this->Precio;
     }
 
     public function getIva()
     {
-        // Asegurar que siempre devuelva un número
-        if ($this->iva === null || $this->iva === '') {
-            // Intentar cargar desde la base de datos si es necesario
-            if ($this->id && !$this->iva) {
-                $producto = DB::select("SELECT IVA FROM productos WHERE ID_producto = ?", [$this->id]);
-                if (!empty($producto)) {
-                    $this->iva = $producto[0]->IVA;
-                }
-            }
-
-            // Si sigue siendo null, poner valor por defecto
-            if ($this->iva === null) {
-                $this->iva = 21;
-            }
-        }
-
-        return (float)$this->iva;
+        return (float)($this->IVA ?? 21);
     }
 
     public function getStock()
     {
-        return $this->stock;
+        return $this->Stock;
     }
 
     public function getCategoria()
     {
-        return $this->categoria;
+        return $this->Categoria;
     }
 
     public function getImagenes()
     {
-        return $this->url_imagenes;
-    }
-    // Setters
-    public function setStock($s)
-    {
-        $this->stock = $s;
+        return $this->URL_imagenes;
     }
 
-    public function aumentarStock()
+    public function setStock($stock)
     {
-        $this->stock += 1;
+        $this->Stock = $stock;
     }
 
-    public function disminuirStock()
-    {
-        if ($this->stock > 0) {
-            $this->stock -= 1;
-        }
-    }
-
-    // Métodos estáticos adaptados a Laravel
+    // Métodos estáticos
     public static function getAll()
     {
-        $sql = "SELECT ID_producto as id, Nombre as nombre, Descripcion_producto as descripcion, Precio as precio, IVA as iva,Categoria as categoria, Stock as stock, URL_imagenes as url_imagenes FROM productos";
-
-        $result = DB::select($sql);
-
-        if (empty($result)) {
-            return [];
-        }
-
-        $productos = [];
-
-        foreach ($result as $fila) {
-            $productos[] = (array) $fila;
-        }
-
-        return $productos;
+        return self::all()->map(function ($producto) {
+            return (object) [
+                'id' => $producto->ID_producto,
+                'nombre' => $producto->Nombre,
+                'descripcion' => $producto->Descripcion_producto,
+                'precio' => $producto->Precio,
+                'iva' => $producto->IVA ?? 21,
+                'categoria' => $producto->Categoria,
+                'stock' => $producto->Stock,
+                'url_imagenes' => $producto->URL_imagenes
+            ];
+        })->toArray();
     }
 
     public static function getById($id)
     {
-        $sql = "SELECT 
-            ID_producto as id,
-            Nombre as nombre, 
-            Descripcion_producto as descripcion, 
-            Precio as precio, 
-            IVA as iva,
-            Categoria as categoria, 
-            Stock as stock ,
-            URL_imagenes as url_imagenes
-            FROM productos
-            WHERE ID_producto = ?";
+        $producto = self::find($id);
 
-        $result = DB::select($sql, [$id]);
-
-        if (empty($result)) {
+        if (!$producto) {
             return null;
         }
 
-        $data = $result[0];
-        // Verificar que el IVA existe
-        if (!isset($data->iva) || $data->iva === null) {
-            Log::warning("Producto {$id} no tiene IVA definido");
-            // Asignar valor por defecto temporal
-            $data->iva = 21;
-        }
-
-        $p = new Producto(
-            $data->id,
-            $data->nombre,
-            $data->descripcion,
-            $data->precio,
-            $data->iva,
-            $data->stock,
-            $data->categoria,
-            $data->url_imagenes
-        );
-
-        return $p;
+        return $producto;
+    }
+    public static function updateStock($id, $stock)
+    {
+        return DB::table('productos')
+            ->where('ID_producto', $id)
+            ->update(['Stock' => $stock]);
     }
 }

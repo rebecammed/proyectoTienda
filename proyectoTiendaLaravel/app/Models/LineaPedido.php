@@ -17,18 +17,15 @@ class LineaPedido extends Model
         'Cantidad'
     ];
 
-    public static function crearLineas($pedidoId, $carrito)
+    public static function crearLineas($pedidoId, $productosCarrito)
     {
-        $productos = $carrito->getCarrito();
-
-        foreach ($productos as $item) {
+        foreach ($productosCarrito as $item) {
             DB::table('lineas_pedido')->insert([
                 'ID_pedido' => $pedidoId,
                 'ID_producto' => $item['id'],
                 'Cantidad' => $item['cantidad']
             ]);
 
-            // Actualizar stock
             DB::table('productos')
                 ->where('ID_producto', $item['id'])
                 ->decrement('Stock', $item['cantidad']);
@@ -46,12 +43,10 @@ class LineaPedido extends Model
             ->get();
 
         foreach ($lineas as $linea) {
-            // Precio unitario con IVA
             $linea->Precio_con_iva = round($linea->Precio * (1 + $linea->IVA / 100), 2);
-            // Subtotal de la línea (cantidad * precio con IVA)
             $linea->Subtotal = round($linea->Cantidad * $linea->Precio_con_iva, 2);
-
-            return $lineas;
         }
+
+        return $lineas;  // ← El return debe ir FUERA del foreach
     }
 }
