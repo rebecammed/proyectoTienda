@@ -231,8 +231,15 @@ export default function Perfil() {
     e.preventDefault();
     setError("");
     const bodyData = direccionEditando
-      ? { id: direccionEditando.id, ...nuevaDireccion }
-      : nuevaDireccion;
+      ? {
+          id: direccionEditando.id,
+          ...nuevaDireccion,
+          codigoPostal: String(nuevaDireccion.codigoPostal),
+        }
+      : {
+          ...nuevaDireccion,
+          codigoPostal: String(nuevaDireccion.codigoPostal),
+        };
     const method = direccionEditando ? "PUT" : "POST";
     const res = await authFetch("/direcciones", {
       method: method,
