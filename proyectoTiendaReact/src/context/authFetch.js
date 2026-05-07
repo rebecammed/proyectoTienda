@@ -6,8 +6,9 @@ export const authFetch = (endpoint, options = {}) => {
   return fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
-      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
       ...options.headers,
     },
   });
