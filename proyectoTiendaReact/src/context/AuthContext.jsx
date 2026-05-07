@@ -40,12 +40,25 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (nombreUsuario, rolUsuario) => {
-    setUsuario(nombreUsuario);
-    setRol(rolUsuario);
-    setIsLoggedIn(true);
-    localStorage.setItem("usuario", nombreUsuario);
-    localStorage.setItem("rol", rolUsuario);
+  const login = async (email, password) => {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario: email, contrasena: password }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("usuario", data.usuario);
+      localStorage.setItem("rol", data.rol);
+      setUsuario(data.usuario);
+      setRol(data.rol);
+      setIsLoggedIn(true);
+      return true;
+    }
+    return false;
   };
 
   const logout = () => {

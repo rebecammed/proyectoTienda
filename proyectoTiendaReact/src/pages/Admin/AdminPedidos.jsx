@@ -74,7 +74,10 @@ const AdminPedidos = () => {
         "https://proyectotienda-m8um.onrender.com/api/admin/pedidos",
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );
@@ -100,7 +103,10 @@ const AdminPedidos = () => {
         "https://proyectotienda-m8um.onrender.com/api/admin/usuarios",
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );
@@ -127,7 +133,10 @@ const AdminPedidos = () => {
         `https://proyectotienda-m8um.onrender.com/api/admin/pedidos/${pedidoId}/estado`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ estado: nuevoEstado }),
           credentials: "include",
         },

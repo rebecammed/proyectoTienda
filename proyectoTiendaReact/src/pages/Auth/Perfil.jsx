@@ -115,7 +115,10 @@ export default function Perfil() {
       "https://proyectotienda-m8um.onrender.com/api/perfil",
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
         credentials: "include",
       },
     );
@@ -132,7 +135,10 @@ export default function Perfil() {
       "https://proyectotienda-m8um.onrender.com/api/direcciones",
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
         credentials: "include",
       },
     );
@@ -160,7 +166,10 @@ export default function Perfil() {
       "https://proyectotienda-m8um.onrender.com/api/perfil",
       {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           nombre: usuario.nombre,
           email: usuario.email,
@@ -198,7 +207,10 @@ export default function Perfil() {
       "https://proyectotienda-m8um.onrender.com/api/cambiar-password",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
         credentials: "include",
         body: JSON.stringify({
           password_actual: passwordData.password_actual,
@@ -254,7 +266,10 @@ export default function Perfil() {
 
     const res = await fetch(url, {
       method: method,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
       credentials: "include",
       body: JSON.stringify(nuevaDireccion),
     });

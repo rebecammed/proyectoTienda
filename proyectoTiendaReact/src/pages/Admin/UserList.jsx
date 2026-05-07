@@ -67,7 +67,10 @@ const UserList = () => {
         "https://proyectotienda-m8um.onrender.com/api/admin/usuarios",
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );
@@ -102,7 +105,10 @@ const UserList = () => {
         `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}/estado`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ activo: nuevoEstado }),
           credentials: "include",
         },
@@ -142,7 +148,10 @@ const UserList = () => {
         `https://proyectotienda-m8um.onrender.com/api/admin/usuarios/${id}/eliminar`,
         {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );

@@ -77,7 +77,10 @@ const ProductList = () => {
         "https://proyectotienda-m8um.onrender.com/api/productos",
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );
@@ -110,7 +113,10 @@ const ProductList = () => {
         `https://proyectotienda-m8um.onrender.com/api/admin/productos/${id}`,
         {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );

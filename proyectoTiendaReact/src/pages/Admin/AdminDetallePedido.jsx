@@ -55,7 +55,10 @@ function AdminDetallePedido() {
         {
           method: "GET",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
         },
       );
 
@@ -89,7 +92,10 @@ function AdminDetallePedido() {
         {
           method: "PUT",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ estado: estadoSeleccionado }),
         },
       );

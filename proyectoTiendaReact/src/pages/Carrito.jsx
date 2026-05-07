@@ -80,7 +80,10 @@ function Carrito() {
         {
           method: "GET",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
         },
       );
       const data = await res.json();
@@ -104,7 +107,10 @@ function Carrito() {
         {
           method: "GET",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
         },
       );
       const data = await res.json();
@@ -132,7 +138,10 @@ function Carrito() {
       await fetch("https://proyectotienda-m8um.onrender.com/api/carrito/add", {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ id: id, cantidad: cantidad }),
       });
       await cargarCarrito();
@@ -156,7 +165,10 @@ function Carrito() {
         {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ id: id }),
         },
       );
@@ -204,7 +216,10 @@ function Carrito() {
         {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             direccion_id: direccionSeleccionada,
           }),

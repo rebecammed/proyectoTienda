@@ -26,6 +26,10 @@ function MisPedidos() {
       const res = await fetch(
         "https://proyectotienda-m8um.onrender.com/api/pedidos",
         {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );

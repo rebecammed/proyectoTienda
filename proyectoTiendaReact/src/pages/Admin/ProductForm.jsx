@@ -66,7 +66,10 @@ const ProductForm = () => {
         `https://proyectotienda-m8um.onrender.com/api/productos/${id}`,
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         },
       );
@@ -144,7 +147,10 @@ const ProductForm = () => {
 
       const response = await fetch(url, {
         method: method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           nombre: formData.nombre,
           descripcion: formData.descripcion,

@@ -43,7 +43,10 @@ function AdminPedidosUsuario() {
         {
           method: "GET",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
         },
       );
       const dataUsuario = await resUsuario.json();
@@ -57,7 +60,10 @@ function AdminPedidosUsuario() {
         {
           method: "GET",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
         },
       );
       const data = await resPedidos.json();

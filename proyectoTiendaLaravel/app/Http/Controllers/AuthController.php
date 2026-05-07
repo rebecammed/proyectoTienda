@@ -7,38 +7,32 @@ use App\Models\Carrito;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'usuario' => 'required|string',
-            'contrasena' => 'required|string'
-        ]);
+        $credentials = $request->only('usuario', 'contrasena');
 
-        $usuario = $request->input('usuario');
-        $contrasena = $request->input('contrasena');
+        // Buscar usuario por email
+        $user = Usuario::where('Email', $credentials['usuario'])->first();
 
-        $user = Usuario::login($usuario, $contrasena);
-
-        if (!$user) {
+        if (!$user || !Hash::check($credentials['contrasena'], $user->Password_hash)) {
             return response()->json([
                 'success' => false,
                 'mensaje' => 'Usuario o contraseña incorrectos'
             ], 401);
         }
-        session()->put('usuario_id', $user['ID_usuario']);
-        session()->put('usuario', $user['Nombre_completo']);
-        session()->put('rol', $user['Rol'] ?? 'USER');
-        session()->put('carrito', new Carrito());
-        session()->save();
+
+        // Generar token JWT
+        $token = JWTAuth::fromUser($user);
 
         return response()->json([
             'success' => true,
-            'usuario' => $user['Nombre_completo'],
-            'rol' => $user['Rol'] ?? 'USER'
+            'token' => $token,
+            'usuario' => $user->Nombre_completo,
+            'rol' => $user->Rol ?? 'USER'
         ]);
     }
 
@@ -80,34 +74,19 @@ class AuthController extends Controller
         ]);
     }
 
-    public function obtenerPerfil()
+    public function obtenerPerfil(Request $request)
     {
-        if (!session()->has('usuario_id')) {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'No autenticado'
-            ], 401);
-        }
-
-        $user_id = session()->get('usuario_id');
-        $usuario = Usuario::getById($user_id);
-
-        if ($usuario) {
-            return response()->json([
-                'success' => true,
-                'usuario' => [
-                    'id' => $usuario->getId(),
-                    'nombre' => $usuario->getNombre(),
-                    'email' => $usuario->getEmail(),
-                    'activo' => $usuario->isActivo(),
-                ]
-            ]);
-        }
+        $user = JWTAuth::parseToken()->authenticate();
 
         return response()->json([
-            'success' => false,
-            'mensaje' => 'Usuario no encontrado'
-        ], 404);
+            'success' => true,
+            'usuario' => [
+                'id' => $user->ID_usuario,
+                'nombre' => $user->Nombre_completo,
+                'email' => $user->Email,
+                'activo' => $user->Activo
+            ]
+        ]);
     }
 
     public function actualizarPerfil(Request $request)
