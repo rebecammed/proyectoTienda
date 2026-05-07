@@ -21,7 +21,7 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Rutas con login
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:jwt')->group(function () {
     // Auth
 
     Route::get('/perfil', [AuthController::class, 'obtenerPerfil']);
@@ -47,7 +47,7 @@ Route::middleware('auth:api')->group(function () {
 });
 
 // Rutas admin
-Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:jwt', 'admin'])->prefix('admin')->group(function () {
     Route::get('/stats', [AdminController::class, 'stats']);
 
     // Usuarios
