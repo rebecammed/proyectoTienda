@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from "react";
-const API_URL = "https://proyectotienda-m8um.onrender.com/api";
 
 const AuthContext = createContext();
 
@@ -18,49 +17,19 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const esAdmin = rol === "ADMIN";
-  // Cargar usuario de localStorage al iniciar
+
   useEffect(() => {
     const storedUser = localStorage.getItem("usuario");
     const storedRol = localStorage.getItem("rol");
+    const token = localStorage.getItem("token");
 
-    console.log("AuthProvider - Cargando de localStorage:", {
-      storedUser,
-      storedRol,
-    });
-
-    if (
-      storedUser &&
-      storedRol &&
-      storedUser !== "undefined" &&
-      storedRol !== "undefined"
-    ) {
+    if (token && storedUser && storedRol) {
       setUsuario(storedUser);
       setRol(storedRol);
       setIsLoggedIn(true);
     }
     setLoading(false);
   }, []);
-
-  const login = async (email, password) => {
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ usuario: email, contrasena: password }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("usuario", data.usuario);
-      localStorage.setItem("rol", data.rol);
-      setUsuario(data.usuario);
-      setRol(data.rol);
-      setIsLoggedIn(true);
-      return true;
-    }
-    return false;
-  };
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -71,6 +40,13 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
   };
 
+  // Función para actualizar el estado después del login (la llama Login.jsx)
+  const setAuthData = (nombreUsuario, rolUsuario) => {
+    setUsuario(nombreUsuario);
+    setRol(rolUsuario);
+    setIsLoggedIn(true);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -78,9 +54,9 @@ export const AuthProvider = ({ children }) => {
         rol,
         isLoggedIn,
         loading,
-        login,
         logout,
         esAdmin,
+        setAuthData, // ← nueva función solo para actualizar estado
       }}
     >
       {children}
