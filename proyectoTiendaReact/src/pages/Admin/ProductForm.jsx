@@ -131,9 +131,7 @@ const ProductForm = () => {
     }
 
     try {
-      const url = esEdicion
-        ? `https://proyectotienda-m8um.onrender.com/api/admin/productos/${id}`
-        : "https://proyectotienda-m8um.onrender.com/api/admin/productos";
+      const url = esEdicion ? `/admin/productos/${id}` : "/admin/productos";
 
       const method = esEdicion ? "PUT" : "POST";
       const response = await authFetch(url, {
