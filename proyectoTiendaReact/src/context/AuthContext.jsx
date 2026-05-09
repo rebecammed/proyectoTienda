@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
   };
 
-  // Función para actualizar el estado después del login (la llama Login.jsx)
   const login = (nombreUsuario, rolUsuario) => {
     setUsuario(nombreUsuario);
     setRol(rolUsuario);
@@ -56,7 +55,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         logout,
         esAdmin,
-        login, // ← nueva función solo para actualizar estado
+        login,
       }}
     >
       {children}

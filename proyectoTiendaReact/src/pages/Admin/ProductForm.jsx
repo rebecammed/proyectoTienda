@@ -533,7 +533,7 @@ const ProductForm = () => {
                 URL de la imagen
               </label>
               <input
-                type="url"
+                type="text"
                 name="url_imagenes"
                 value={formData.url_imagenes}
                 onChange={handleChange}
