@@ -101,10 +101,15 @@ Este proyecto me permitió mejorar la estructura y organización del desarrollo,
 ## Estructura del proyecto
 proyecto-tienda
 │
+
 ├── backend # API y lógica del servidor Laravel
+
 ├── frontend # Aplicación React
+
 ├── database
+
 │ └── database.sql
+
 └── README.md
 
 
